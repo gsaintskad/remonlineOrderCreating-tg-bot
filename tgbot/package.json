@@ -1,0 +1,38 @@
+{
+  "name": "remonlinebot",
+  "version": "1.0.1",
+  "description": "telegran integration for remonline",
+  "main": "app.ts",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "ENV=dev node -r dotenv/config app.mjs",
+    "test": "ENV=ngrok nodemon -r dotenv/config app.mjs",
+    "prod": "ENV=prod node -r dotenv/config app.mjs",
+    "remonline": "REMONLINE_MODE=dev node -r dotenv/config ./remonline/utils.js"
+  },
+  "keywords": [
+    "telegram",
+    "remonline"
+  ],
+  "author": "bobozlo",
+  "license": "ISC",
+  "dependencies": {
+    "@api/remonline": "file:.api/apis/remonline",
+    "cors": "^2.8.5",
+    "db-migrate": "^0.11.14",
+    "db-migrate-sqlite3": "^0.5.0",
+    "dotenv": "^16.3.1",
+    "email-validator": "^2.0.4",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "libphonenumber-js": "^1.10.47",
+    "node-fetch": "^3.3.2",
+    "sqlite": "^5.0.1",
+    "sqlite3": "^5.1.6",
+    "telegraf": "^4.12.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "remonline",
+      "source": "@remonline/v1.0#ryq02wm70ew474",
+      "integrity": "sha512-HCDnReensRFOb/4tROEO2iDokLFGpy3wuqp6Enr3jq/t4+4KD2b57Z2xWIDSYFoGd8oOCJ6UVGptyBC0JjpkYQ==",
+      "installerVersion": "6.1.2"
+    }
+  ]
+}
