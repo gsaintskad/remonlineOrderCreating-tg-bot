@@ -36,7 +36,7 @@ const OrdersTable = () => {
             try {
                 //@ts-ignore
                 console.log("init data:", tg.initData);
-                const response = await fetch(`http://localhost:3000/order/${getQueryParam("remonline_id")}`,{
+                const response = await fetch(`/bot/order/${getQueryParam("remonline_id")}`,{
                     method: "GET",
 
                 }); // Replace with real API

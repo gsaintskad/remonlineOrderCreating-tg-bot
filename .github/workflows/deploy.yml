@@ -1,0 +1,32 @@
+# name: Deploy to Docker Compose
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   deploy:
+#     name: Deploy
+#     runs-on: self-hosted 
+
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v4 # Fetches your code into the runner
+
+#       - name: Deploy to Server and Restart Docker Compose
+#         uses: appleboy/ssh-action@master # Uses a popular action to SSH into your server
+#         with:
+#           host: ${{ secrets.DEPLOY_HOST }}
+#           username: ${{ secrets.DEPLOY_USERNAME }}
+#           key: ${{ secrets.DEPLOY_SSH_KEY }}
+#           script: |
+#             echo "Connecting to server..."
+#             cd /root/remonlineOrderCreating-tg-bot # IMPORTANT: Change this to the path of your project on your server
+#             echo "Pulling latest changes from main branch..."
+#             git pull origin main # Or your specific remote and branch
+#             echo "Stopping services..."
+#             docker-compose down
+#             echo "Building and starting services..."
+#             docker-compose up --build -d
+#             echo "Deployment complete!"
