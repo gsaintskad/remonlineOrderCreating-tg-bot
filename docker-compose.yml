@@ -1,9 +1,8 @@
 version: '3.8'
 
-# Top-level key for defining networks should be 'networks' (plural)
 networks:
-  m_net: # Your custom network definition
-    driver: bridge # You can specify a driver, 'bridge' is the default if not specified
+  m_net:
+    driver: bridge 
 
 services:
   nginx:
@@ -12,24 +11,16 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf # Ensure nginx.conf exists at this path
-      - /etc/letsencrypt:/etc/letsencrypt # Ensure this path is correct and accessible
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt 
     networks:
-      - m_net # Connects this service to the 'm_net' network
+      - m_net
     depends_on:
-      - webapp # Ensures webapp starts before nginx
+      - webapp
   webapp:
     build:
-      context: ./webapp # Ensure there's a Dockerfile in the ./webapp directory
-    # The internal port of your webapp container should be 80,
-    # which is then mapped to port 8080 on the host.
-    # If your webapp listens on a different port inside the container, adjust accordingly.
+      context: ./webapp 
     ports:
       - "8080:8080"
     networks:
-      - m_net # Connects this service to the 'm_net' network
-
-# Optional: Define the 'm_net' network as external if it's created outside this compose file
-# networks:
-#   m_net:
-#     external: true
+      - m_net
