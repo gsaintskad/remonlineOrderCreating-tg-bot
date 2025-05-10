@@ -52,17 +52,6 @@ bot.use(stage.middleware());
   const webhookUrl = `${process.env.HOST}${webhookPath}`;
   app.use(express.json());
 
-  if (process.env.ENV === 'dev') {
-    bot.command('reset', onReset);
-    bot.launch();
-    console.log('Bot is running in development mode...');
-  } else if (process.env.ENV === 'prod') {
-    await bot.createWebhook({ domain: process.env.HOST, path: webhookPath });
-    app.use(webhookPath, async (req, res) => {
-      await bot.handleUpdate(req.body);
-      res.sendStatus(200);
-    });
-  }
   app.get('/bot/order/:remonline_id', async (req, res) => {
     try {
       const { remonline_id } = req.params;
@@ -82,12 +71,22 @@ bot.use(stage.middleware());
       res.status(500).json({ error: 'Internal server error' });
     }
   });
-
   app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
     console.log(
       `Repairstationbot listening on port ${process.env.PORT || 3000}`
     );
   });
+  if (process.env.ENV === 'dev') {
+    bot.command('reset', onReset);
+    bot.launch();
+    console.log('Bot is running in development mode...');
+  } else if (process.env.ENV === 'prod') {
+    await bot.createWebhook({ domain: process.env.HOST, path: webhookPath });
+    app.use(webhookPath, async (req, res) => {
+      await bot.handleUpdate(req.body);
+      res.sendStatus(200);
+    });
+  }
 
   console.log('Bot setup completed.');
 })();
