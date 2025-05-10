@@ -13,7 +13,7 @@ services:
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf # Ensure nginx.conf exists at this path
-      - '/etc/letsencrypt:/etc/letsencrypt' # Ensure this path is correct and accessible
+      - /etc/letsencrypt:/etc/letsencrypt # Ensure this path is correct and accessible
     networks:
       - m_net # Connects this service to the 'm_net' network
     depends_on:
