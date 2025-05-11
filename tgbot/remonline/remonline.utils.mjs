@@ -43,12 +43,11 @@ export async function createOrder({
   manager_id,
 }) {
     const order_type= 185289;
-  console.log('createOrder', arguments);
   const custom_fields = {
-    f5294177: 'test',
-    f5294178: 5.0,
-    f6728287: plateNumber,
-    f6728288: branchPublicName,
+    f5294177: 'test', // автопарк
+    f5294178: 5.0,// Пробег одонометр
+    f6728287: plateNumber,// номер авто
+    f6728288: branchPublicName,// название бранча(города)
   };
   const params = {
     order_type,
@@ -105,60 +104,7 @@ export async function createOrder({
     console.log('createOrder return:', data, id, idLabel);
     return { id, idLabel };
 }
-export async function postMockOrder() {
-  const client_id = 34268974;
-  const branch_id = 112954;
-  const order_type = 185289;
-  const ad_campaign_id = 301120;
-  const options = {
-    method: 'POST',
-    headers: { accept: 'application/json', 'content-type': 'application/json' },
-    body: JSON.stringify({
-      order_type,
-      branch_id,
-      client_id,
-      malfunction: 'someMalfunction',
-      scheduled_for: 2000000000000,
-      custom_fields: {
-        f5294177: 'test',
-        f5294178: 5.0,
-      },
-      ad_campaign_id,
-    }),
-  };
 
-  const response = await fetch(
-    `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}`,
-    options
-  );
-  console.log('fetching... ', url);
-  const data = await response.json();
-  const { success } = data;
-  if (!success) {
-    const { message, code } = data;
-    const { validation } = message;
-    if (response.status == 403 && code == 101) {
-      console.info({ function: 'postMockOrder', message: 'Get new Auth' });
-      await remonlineTokenToEnv(true);
-      return await postMockOrder({
-        id,
-        id_label,
-        status_id,
-        created_at,
-        modified_at,
-        auto_park_id,
-      });
-    }
-    console.error({
-      function: 'postMockOrder',
-      message,
-      validation,
-      status: response.status,
-    });
-    return;
-  }
-  return data;
-}
 
 export async function getClientsByPhone({ nationalNumber }) {
   const response = await fetch(
