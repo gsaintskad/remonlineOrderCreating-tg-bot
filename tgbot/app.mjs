@@ -52,11 +52,11 @@ bot.use(stage.middleware());
   const webhookUrl = `${process.env.HOST}${webhookPath}`;
   app.use(express.json());
 
-  app.get('/bot/order/:remonline_id', async (req, res) => {
+  app.get('/api/order/:remonline_id', async (req, res) => {
  
     try {
       const { remonline_id } = req.params;
-      const { chatId } = req.body;
+
 
       const { data } = await getOrders({
         'clients_ids[]': String(remonline_id),
