@@ -1,36 +1,31 @@
-FROM node:23-alpine AS development
+FROM node:20-alpine
+
+ENV NODE_ENV=production
+ENV PORT=3000
 
 WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+RUN apk add --no-cache --virtual .npm-build-deps python3 make g++ && \
+    npm install --only=production && \
+    apk del .npm-build-deps
 
-# Install sqlite3 command-line tool
-RUN apk add --no-cache sqlite
-
-# Copy the rest of your application code
 COPY . .
 
-# Create a dedicated directory for database files
-RUN mkdir -p /usr/src/app/data
+RUN apk add --no-cache --virtual .db-setup-deps sqlite-tools && \
+    mkdir -p /usr/src/app/data && \
+    node node_modules/.bin/db-migrate db:create main --verbose || true && \
+    node node_modules/.bin/db-migrate up --verbose && \
+    sqlite3 /usr/src/app/data/main.db "INSERT INTO branches(id, name, public_name, manager_id) VALUES('112954', 'name', 'public name', '182200');" || true && \
+    apk del .db-setup-deps
 
-# Run database creation, migration, and seeding scripts.
-# These will initially create main.db in /usr/src/app/
-RUN node node_modules/db-migrate/bin/db-migrate db:create main
-RUN node node_modules/db-migrate/bin/db-migrate up
-RUN sqlite3 main.db "INSERT INTO branches(id, name, public_name, manager_id) VALUES('112954', 'name', 'public name', '182200');"
-
-# Move the populated database into the data directory
-RUN mv main.db /usr/src/app/data/main.db
-
-# Declare the volume for the data directory
 VOLUME /usr/src/app/data
+EXPOSE ${PORT}
 
-EXPOSE 8080
-EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q --spider http://localhost:${PORT}/health || exit 1
 
-# IMPORTANT: Your application must now be configured to find the database
-# at /usr/src/app/data/main.db or ./data/main.db
-CMD [ "npm", "run", "dev" ]
+CMD [ "node", "src/server.js" ]
+
+

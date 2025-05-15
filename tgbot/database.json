@@ -2,6 +2,10 @@
     "defaultEnv": "dev",
     "dev": {
         "driver": "sqlite3",
-        "filename": "./main.db"
+        "filename": "./data/main.db"
+    },
+    "prod": {
+        "driver": "sqlite3",
+        "filename": "/usr/src/app/data/main.db"
     }
 }
