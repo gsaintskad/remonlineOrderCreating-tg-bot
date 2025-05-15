@@ -37,7 +37,7 @@ services:
     ports:
       - "3000:3000" # Maps host port 3000 to container port 3000
     volumes:
-      - tgbot_db_data:/usr/src/app/data # Persists database data
+      - ./tgbot/data:/usr/src/app/data # Persists database data
     networks:
       - m_net # Connects the tgbot service to the 'm_net' network
 
