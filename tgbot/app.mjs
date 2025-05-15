@@ -82,7 +82,9 @@ bot.use(stage.middleware());
     bot.launch();
     console.log('Bot is running in development mode...');
   } else if (process.env.ENV === 'prod') {
-    await bot.createWebhook({ domain: process.env.HOST, path: webhookPath });
+    const webhookProps={ domain: process.env.HOST, path: webhookPath }
+    console.log({webhookProps})
+    await bot.createWebhook(webhookProps);
     app.use(webhookPath, async (req, res) => {
       await bot.handleUpdate(req.body);
       res.sendStatus(200);

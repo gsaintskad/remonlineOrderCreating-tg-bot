@@ -4,6 +4,7 @@ import {
 } from '../telegram.queries.mjs';
 
 export async function dbLogger(ctx, next) {
+    return
     if (ctx.session.saved) {
         await next();
         return
