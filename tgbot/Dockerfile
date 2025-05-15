@@ -1,5 +1,5 @@
 
-FROM node:23-slim AS base
+FROM node:18-slim AS base
 
 
 WORKDIR /usr/src/app
