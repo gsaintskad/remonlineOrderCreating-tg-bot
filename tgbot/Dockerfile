@@ -15,7 +15,8 @@ RUN mkdir -p /usr/src/app/data
 ENV DB_FILE_PATH="/usr/src/app/data/main.db"
 
 # Run database migrations.
-RUN npx db-migrate up --env prod
+# RUN npx db-migrate up --env prod
+RUN node node_modules/db-migrate/bin/db-migrate up
 RUN sqlite3 "$DB_FILE_PATH" "INSERT INTO branches(id, name, public_name, manager_id) VALUES('112954', 'name', 'public name', '182200');"
 
 VOLUME /usr/src/app/data
