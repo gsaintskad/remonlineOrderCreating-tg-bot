@@ -19,7 +19,7 @@ exports.up = function (db, callback) {
     id STRING,
     name STRING, 
     public_name STRING
-    )`
+    );`
   db.runSql(data, function (err) {
     if (err) return console.log(err);
     callback();

@@ -16,7 +16,7 @@ exports.setup = function (options, seedLink) {
 
 exports.up = function (db, callback) {
   const data = `ALTER TABLE telegram_users
-  ADD remonline_id STRING`
+  ADD remonline_id STRING;`
   db.runSql(data, function (err) {
     if (err) return console.log(err);
     callback();

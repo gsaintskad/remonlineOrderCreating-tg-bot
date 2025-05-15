@@ -22,7 +22,7 @@ exports.up = function (db, callback) {
     first_name STRING,
     last_name STRING,
     username STRING
-    )`
+    );`
   
   db.runSql(data, function (err) {
     if (err) return console.log(err);

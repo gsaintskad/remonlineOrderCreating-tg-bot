@@ -23,7 +23,7 @@ exports.up = function (db, callback) {
     created_by STRING,
     plate_number STRING,
     malfunction STRING
-    )`
+    );`
   db.runSql(data, function (err) {
     if (err) return console.log(err);
     callback();

@@ -20,7 +20,7 @@ exports.up = function (db, callback) {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
     token STRING,
     valid_to INTEGER
-    )`
+    );`
   db.runSql(data, function (err) {
     if (err) return console.log(err);
     callback();
