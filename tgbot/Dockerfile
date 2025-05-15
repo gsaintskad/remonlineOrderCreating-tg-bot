@@ -1,5 +1,5 @@
 
-FROM node:18-alpine AS base
+FROM node:18-slim AS base
 
 RUN apk add --no-cache sqlite
 
