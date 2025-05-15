@@ -76,7 +76,7 @@ export async function createOrder({
       const { message, code } = data;
       const { validation } = message;
 
-      if (response.status == 403 && code == 101) {
+      if (response.status == 403 && code == 101||response.status == 401 && code == 401) {
         console.info({ function: 'createOrder', message: 'Get new Auth' });
         await remonlineTokenToEnv(true);
         return await createOrder({
@@ -86,7 +86,7 @@ export async function createOrder({
           remonlineId,
           branchPublicName,
           branchId,
-          managerId,
+          // managerId,
         });
       }
 
