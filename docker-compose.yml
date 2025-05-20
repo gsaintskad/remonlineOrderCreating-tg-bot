@@ -17,7 +17,7 @@ services:
       - m_net
     depends_on:
       - webapp
-      - tgbot
+      #- tgbot
   webapp:
     build:
       context: ./webapp 
@@ -26,22 +26,22 @@ services:
     networks:
       - m_net
   
-  tgbot:
-    build:
-      # The build context is now set to './tgbot', meaning Docker will look
-      # for the Dockerfile in a subdirectory named 'tgbot' relative to this docker-compose.yml
-      context: ./tgbot
-      # dockerfile: Dockerfile # Optional: if your Dockerfile has a different name
-    container_name: tgbot-container
-    restart: unless-stopped
-    env_file:
-      - ./.env # Loads environment variables from a .env file in the same directory as docker-compose.yml
-    ports:
-      - "3000:3000" # Maps host port 3000 to container port 3000
-    volumes:
-      - ./tgbot/data:/usr/src/app/data # Persists database data
-    networks:
-      - m_net # Connects the tgbot service to the 'm_net' network
+  # tgbot:
+  #   build:
+  #     # The build context is now set to './tgbot', meaning Docker will look
+  #     # for the Dockerfile in a subdirectory named 'tgbot' relative to this docker-compose.yml
+  #     context: ./tgbot
+  #     # dockerfile: Dockerfile # Optional: if your Dockerfile has a different name
+  #   container_name: tgbot-container
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./.env # Loads environment variables from a .env file in the same directory as docker-compose.yml
+  #   ports:
+  #     - "3000:3000" # Maps host port 3000 to container port 3000
+  #   volumes:
+  #     - ./tgbot/data:/usr/src/app/data # Persists database data
+  #   networks:
+  #     - m_net # Connects the tgbot service to the 'm_net' network
 
 volumes:
   tgbot_db_data: # Defines the named volume for data persistence
