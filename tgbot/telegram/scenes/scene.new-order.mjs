@@ -53,13 +53,6 @@ export const createOrderScene = new Scenes.WizardScene(
   //     return ctx.wizard.next();
   // },
   async (ctx) => {
-    // const apointmenDate = new Date(ctx.message?.text)
-    // if (apointmenDate == 'Invalid Date') {
-    //     ctx.reply(ua.createOrder.wrongApointmenDateFormat);
-    //     return;
-    // }
-    // ctx.wizard.state.contactData.apointmenDate = apointmenDate;
-    // ctx.wizard.state.contactData.apointmenDateString = ctx.message?.text;
 
     if (
       !Object.values(malfunctionTypes).includes(ctx.message?.text) &&
@@ -140,13 +133,6 @@ export const createOrderScene = new Scenes.WizardScene(
       const { manager_id } = manager;
 
       try {
-        console.log({
-          message: 'trying to create order',
-          scheduledFor,
-          plateNumber,
-          malfunction,
-          manager_id,
-        });
         const { idLabel, orderId } = await createOrder({
           malfunction,
           scheduledFor,
