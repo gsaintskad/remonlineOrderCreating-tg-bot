@@ -23,7 +23,6 @@ export const getOrdersScene = new Scenes.WizardScene(
   },
   async (ctx) => {
     const response = await getOrders();
-    console.log(response);
     return ctx.wizard.next();
   },
   async (ctx) => {
