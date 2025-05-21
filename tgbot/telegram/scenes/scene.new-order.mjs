@@ -158,7 +158,7 @@ export const createOrderScene = new Scenes.WizardScene(
           manager_id,
         });
         console.log({ idLabel, orderId }, 'order successfully created');
-        return ctx.answerCbQuery('👌');
+   
         await saveOrder({
           orderId,
           orderLable: idLabel,
