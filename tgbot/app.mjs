@@ -112,8 +112,6 @@ bot.use(stage.middleware());
           telegramId: userId,
         });
 
-        
-
         // Используем telegramUserId как client_id для RemOnline
         const { data: ordersResponseData } = await getOrders({
           "clients_ids[]": String(remonline_id),
@@ -152,6 +150,24 @@ bot.use(stage.middleware());
         success: false,
         error: "Invalid Telegram data or hash mismatch",
       });
+    }
+  });
+  app.get("/api/order/:remonline_id", async (req, res) => {
+    try {
+      const { remonline_id } = req.params;
+
+      const { data } = await getOrders({
+        "clients_ids[]": String(remonline_id),
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "Order sent to Telegram bot",
+        orders: data,
+      });
+    } catch (error) {
+      console.error("Error processing order:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
   });
   app.listen(process.env.PORT || 3000, "0.0.0.0", () => {
