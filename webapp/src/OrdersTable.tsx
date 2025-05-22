@@ -31,58 +31,113 @@ const OrdersTable = () => {
   const [resp, setResp] = useState<any>();
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        //@ts-ignore
-        console.log("init data:", tg.initData);
-        const response = await fetch(
-          `/api/order/${getQueryParam("remonline_id")}`,
-          {
-            method: "GET",
-          }
-        ); // Replace with real API
-        setResp(response);
-        if (!response.ok) throw new Error("Failed to fetch orders");
+    const tg = window.Telegram.WebApp;
 
-        const data: Order[] = await response.json();
-        console.log(data);
-        const orders: Order[] = [];
-        const clientsSet = new Set<string>();
-        //@ts-ignore
-        data.orders.data.forEach((order) => {
-          //@ts-ignore
-          const orderData: Order = {
-            id: order.id,
-            client: {
-              name: `${order.client.first_name} ${order.client.last_name}`,
-            },
-            status: { color: order.status.color, name: order.status.name },
-            price: order.price,
-            asset: {
-              uid: order.asset.uid || order.custom_fields.f6728287,
-              model: `${order.asset.color} ${order.asset.brand} ${order.asset}`,
-            },
-          };
-          // if(clientName==='all'){
-          // }
-          // if(clientName===orderData.client.name){
-          //     orders.push(orderData);
-          // }
-          orders.push(orderData);
-          clientsSet.add(orderData.client.name);
+    const authenticateAndFetchOrders = async () => {
+      if (!tg || !tg.initData) {
+        setError("Telegram Web App data not available.");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        console.log(
+          "Sending initData for verification and order fetching:",
+          tg.initData
+        );
+        const response = await fetch("/api/orders", {
+          // Эндпоинт остается тот же
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain", // Отправляем initData как обычный текст
+          },
+          body: tg.initData, // Тело запроса - это сама строка initData
         });
+
+        setResp(response); // Сохраняем объект Response
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(
+            result.error || "Authentication or order fetching failed"
+          );
+        }
+
+        console.log(
+          "Authentication successful, user data from server:",
+          result.user
+        );
+        console.log("Orders data received directly:", result.orders);
+
+        // Обработка заказов из result.orders
+        const fetchedOrders: Order[] = [];
+        const clientsSet = new Set<string>();
+
+        if (result.orders && result.orders.data) {
+          result.orders.data.forEach((order: any) => {
+            // Уточните тип 'order', если возможно
+            const orderDataItem: Order = {
+              id: order.id,
+              client: {
+                name: `${order.client.first_name} ${order.client.last_name}`,
+              },
+              status: { color: order.status.color, name: order.status.name },
+              price: order.price,
+              asset: {
+                uid: order.asset?.uid || order.custom_fields?.f6728287,
+                model:
+                  `${order.asset?.color || ""} ${order.asset?.brand || ""} ${order.asset?.name || ""}`.trim(),
+              },
+            };
+            fetchedOrders.push(orderDataItem);
+            clientsSet.add(orderDataItem.client.name);
+          });
+        } else {
+          console.warn(
+            "Orders data is not in the expected format or missing in the response:",
+            result.orders
+          );
+          if (
+            result.message === "User authenticated, but failed to fetch orders."
+          ) {
+            setError(
+              "Не удалось загрузить заказы, хотя аутентификация прошла успешно."
+            );
+          } else if (!result.orders) {
+            console.log("Нет заказов для отображения.");
+          }
+        }
+
         setClients(clientsSet);
-        setOrders(orders);
+        setOrders(fetchedOrders);
+        // setUser(result.user); // Если нужно сохранить данные пользователя
       } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : "Unknown error");
+        console.error("Error in authenticateAndFetchOrders:", err);
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    fetchOrders();
-  }, [clientName]);
+    if (tg && tg.initData) {
+      authenticateAndFetchOrders();
+    } else {
+      console.warn("Telegram WebApp SDK not ready or no initData.");
+      setLoading(false);
+      setError(
+        "Telegram data not available. Ensure the app is opened within Telegram."
+      );
+    }
+  }, [clientName]); // Зависимость clientName остается, если она используется для фильтрации или других действий *после* загрузки.
+  // Если remonline_id (теперь это telegram_id) был основной причиной для перезапуска эффекта,
+  // и он не меняется в течение сессии Mini App, то его не нужно было бы включать в зависимости.
+  // tg.initData обычно стабилен.
   useEffect(() => {
     //@ts-ignore
     const tg = window.Telegram.WebApp;
