@@ -4,3 +4,4 @@ node_modules
 .DS_Store
 telegram/.DS_Store
 package-lock.json
+vps.conf
