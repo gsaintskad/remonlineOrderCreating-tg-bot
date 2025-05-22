@@ -31,6 +31,7 @@ const OrdersTable = () => {
   const [resp, setResp] = useState<any>();
 
   useEffect(() => {
+    //@ts-ignore
     const tg = window.Telegram.WebApp;
 
     const authenticateAndFetchOrders = async () => {
