@@ -191,7 +191,7 @@ export const getOrders = async (params) => {
   try {
     const token = await remonlineTokenReturn(true);
     console.log({ token });
-    const sdk =  remonline.auth(token);
+    const sdk = remonline.auth(token);
 
     // const response=await remonline.getOrders(params);
     // // console.log(response);
@@ -258,4 +258,51 @@ if (process.env.REMONLINE_MODE == "dev") {
     });
     // getClientsByPhone({ nationalNumber: '0931630786' })
   })();
+}
+export async function createAsset({ uid }) {
+  const url = `${process.env.REMONLINE_API}/warehouse/assets`;
+  const options = {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
+    },
+  };
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  const { success } = data;
+  if (!success) {  body: JSON.stringify({
+    uid: 'pp3004ss',
+    group: 'test',
+    brand: 'test',
+    model: 'test',
+    year: '2050',
+    owner_id: 43,
+    warehouse_id: 999999999,
+    custom_fields: '{"f5269820":"289","f7280143":"289","f8088870":"289",}',
+    color: 'test'
+  })
+    const { message, code } = data;
+    const { validation } = message;
+
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "createAsset", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await createAsset({ uid });
+    }
+
+    console.error({
+      function: "createAsset",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
 }
