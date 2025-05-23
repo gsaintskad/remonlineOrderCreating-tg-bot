@@ -1,7 +1,7 @@
-import fetch from 'node-fetch';
-import { remonlineTokenReturn, remonlineTokenToEnv } from './remonline.api.mjs';
-import { message } from 'telegraf/filters';
-import remonline from '@api/remonline';
+import fetch from "node-fetch";
+import { remonlineTokenReturn, remonlineTokenToEnv } from "./remonline.api.mjs";
+import { message } from "telegraf/filters";
+import remonline from "@api/remonline";
 
 async function getOrderLable(orderId) {
   console.log(
@@ -11,13 +11,13 @@ async function getOrderLable(orderId) {
     `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`
   );
   const data = await response.json();
-  console.log('lable data resp:', data);
+  console.log("lable data resp:", data);
   const { success } = data;
   if (!success) {
     const { message } = data;
     const { validation } = message;
     console.error({
-      function: 'getOrderLable',
+      function: "getOrderLable",
       message,
       validation,
       status: response.status(),
@@ -42,12 +42,12 @@ export async function createOrder({
   branchId,
   manager_id,
 }) {
-    const order_type= 185289;
+  const order_type = 185289;
   const custom_fields = {
-    f5294177: 'test', // автопарк
-    f5294178: 5.0,// Пробег одонометр
-    f6728287: plateNumber,// номер авто
-    f6728288: branchPublicName,// название бранча(города)
+    f5294177: "test", // автопарк
+    f5294178: 5.0, // Пробег одонометр
+    f6728287: plateNumber, // номер авто
+    f6728288: branchPublicName, // название бранча(города)
   };
   const params = {
     order_type,
@@ -61,50 +61,52 @@ export async function createOrder({
   };
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}`;
   const options = {
-    method: 'POST',
-    headers: { accept: 'application/json', 'content-type': 'application/json' },
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
     body: JSON.stringify(params),
   };
 
   const response = await fetch(url, options);
   const data = await response.json();
 
-  console.log({ url,params, data });
- 
-    const { success } = data;
-    if (!success) {
-      const { message, code } = data;
-      const { validation } = message;
+  console.log({ url, params, data });
 
-      if (response.status == 403 && code == 101||response.status == 401 && code == 401) {
-        console.info({ function: 'createOrder', message: 'Get new Auth' });
-        await remonlineTokenToEnv(true);
-        return await createOrder({
-          malfunction,
-          scheduledFor,
-          plateNumber,
-          remonlineId,
-          branchPublicName,
-          branchId,
-          // managerId,
-        });
-      }
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
 
-      console.error({
-        function: 'createOrder',
-        message,
-        validation,
-        status: response.status,
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "createOrder", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await createOrder({
+        malfunction,
+        scheduledFor,
+        plateNumber,
+        remonlineId,
+        branchPublicName,
+        branchId,
+        // managerId,
       });
-      return;
     }
 
-    const { id } = data.data;
-    const { idLabel } = await getOrderLable(id);
-    console.log('createOrder return:', data, id, idLabel);
-    return { id, idLabel };
-}
+    console.error({
+      function: "createOrder",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
 
+  const { id } = data.data;
+  const { idLabel } = await getOrderLable(id);
+  console.log("createOrder return:", data, id, idLabel);
+  return { id, idLabel };
+}
 
 export async function getClientsByPhone({ nationalNumber }) {
   const response = await fetch(
@@ -118,13 +120,13 @@ export async function getClientsByPhone({ nationalNumber }) {
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: 'getClientsByPhone', message: 'Get new Auth' });
+      console.info({ function: "getClientsByPhone", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await getClientsByPhone({ nationalNumber });
     }
 
     console.error({
-      function: 'createOrder',
+      function: "createOrder",
       message,
       validation,
       status: response.status,
@@ -143,18 +145,18 @@ export async function createClient({
   telegramId,
   branchPublicName,
 }) {
-  const [first_name, last_name] = fullName.split(' ');
+  const [first_name, last_name] = fullName.split(" ");
 
   // Prepare request body correctly as a JSON object
   const requestBody = {
     token: process.env.REMONLINE_API_TOKEN,
     first_name,
-    last_name: last_name || 'n0_2nd_Name',
+    last_name: last_name || "n0_2nd_Name",
     phone: [number], // Phone must be an array
     custom_fields: {
       6729251: telegramId.toString(),
-      5370833: 'Зовнішній клієнт',
-      f5370833: 'Зовнішній клієнт',
+      5370833: "Зовнішній клієнт",
+      f5370833: "Зовнішній клієнт",
       6879276: branchPublicName,
     },
   };
@@ -163,11 +165,11 @@ export async function createClient({
     requestBody.email = email;
   }
 
-  console.log('Request Payload:', JSON.stringify(requestBody, null, 2)); // Debugging output
+  console.log("Request Payload:", JSON.stringify(requestBody, null, 2)); // Debugging output
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }, // Ensure JSON content type
+    method: "POST",
+    headers: { "Content-Type": "application/json" }, // Ensure JSON content type
     body: JSON.stringify(requestBody), // Send as JSON, NOT as x-www-form-urlencoded
   });
 
@@ -175,8 +177,8 @@ export async function createClient({
 
   if (!data.success) {
     console.error({
-      function: 'createClient',
-      message: JSON.stringify(data.message) || 'Unknown error',
+      function: "createClient",
+      message: JSON.stringify(data.message) || "Unknown error",
       validation: data.validation,
       status: response.status,
     });
@@ -187,8 +189,9 @@ export async function createClient({
 }
 export const getOrders = async (params) => {
   try {
-  
-    const sdk = await remonline.auth(await remonlineTokenReturn());
+    const token = await remonlineTokenReturn(true);
+    console.log({ token });
+    const sdk =  remonline.auth(token);
 
     // const response=await remonline.getOrders(params);
     // // console.log(response);
@@ -200,18 +203,18 @@ export const getOrders = async (params) => {
 };
 export async function editClient({ id, branchPublicName }) {
   const params = new URLSearchParams();
-  params.append('token', process.env.REMONLINE_API_TOKEN);
-  params.append('id', id);
+  params.append("token", process.env.REMONLINE_API_TOKEN);
+  params.append("id", id);
   params.append(
-    'custom_fields',
+    "custom_fields",
     JSON.stringify({
       6879276: branchPublicName,
     })
   );
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    method: "PUT",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params,
   });
 
@@ -222,7 +225,7 @@ export async function editClient({ id, branchPublicName }) {
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: 'editClient', message: 'Get new Auth' });
+      console.info({ function: "editClient", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await editClient({
         id,
@@ -231,7 +234,7 @@ export async function editClient({ id, branchPublicName }) {
     }
 
     console.error({
-      function: 'editClient',
+      function: "editClient",
       message,
       validation,
       status: response.status,
@@ -244,14 +247,14 @@ export async function editClient({ id, branchPublicName }) {
   return { clientId };
 }
 
-if (process.env.REMONLINE_MODE == 'dev') {
+if (process.env.REMONLINE_MODE == "dev") {
   (async () => {
     await remonlineTokenToEnv();
     createOrder({
-      malfunction: '?',
+      malfunction: "?",
       scheduledFor: new Date().getTime(),
-      plateNumber: '??',
-      telegramId: '???',
+      plateNumber: "??",
+      telegramId: "???",
     });
     // getClientsByPhone({ nationalNumber: '0931630786' })
   })();
