@@ -17,13 +17,25 @@ import { keyboardText } from "./translate.mjs";
 import { remonlineTokenToEnv } from "./remonline/remonline.api.mjs";
 import { getOrdersScene } from "./telegram/scenes/scene.get-orders.mjs";
 import { getOrders } from "./remonline/remonline.utils.mjs";
-import { verifyTelegramWebAppData } from "./telegram/telegram.utilities.mjs";
+import {
+  generateUserAssetListKeyboard,
+  verifyTelegramWebAppData,
+} from "./telegram/telegram.utilities.mjs";
 import { getRemonlineIdByTelegramId } from "./telegram/telegram.queries.mjs";
 
 // Load environment variables
 dotenv.config();
 
 await remonlineTokenToEnv();
+// // await createAsset({uid:"t3stt3st"})
+
+// // const asset = await getAsset({ params: { licensePlate: "t3stt3st" } });
+const remonline_id = 33715361;
+// const asset = await getAsset({ params: {remonline_id:33715361 } });
+// console.log(asset)
+// // return
+// await generateUserAssetListKeyboard({ remonline_id });
+
 const bot = new Telegraf(process.env.TELEGRAM_API_KEY);
 const stage = new Scenes.Stage([
   createRemonlineId,

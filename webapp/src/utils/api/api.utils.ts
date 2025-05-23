@@ -31,7 +31,7 @@ export const getHandledOrders = async ({ remonline_id }: getOrdersProps) => {
       status: { color: order.status.color, name: order.status.name },
       price: order.price,
       asset: {
-        uid: order.asset?.uid || order.customFields?.f6728287,
+        uid: order.custom_fields?.f6728287 || order.asset?.uid,
         model: `${order.asset.color} ${order.asset.brand} ${order.asset}`,
       },
     };

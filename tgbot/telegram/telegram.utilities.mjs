@@ -1,5 +1,7 @@
 import crypto from "crypto";
 import { URLSearchParams } from "url";
+import { Markup } from "telegraf";
+import { getAsset } from "../remonline/remonline.utils.mjs";
 
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);
@@ -48,7 +50,7 @@ export function verifyTelegramWebAppData(initDataString, botToken) {
       try {
         const user = JSON.parse(userString); // Парсим JSON строку с данными пользователя
         // Убеждаемся, что user объект существует и у него есть свойство id
-        if (user && typeof user.id !== 'undefined') {
+        if (user && typeof user.id !== "undefined") {
           userId = user.id;
         }
       } catch (e) {
@@ -61,3 +63,18 @@ export function verifyTelegramWebAppData(initDataString, botToken) {
     return { isValid: false, userId: null };
   }
 }
+
+export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
+  const params = {
+    remonline_id,
+  };
+  const { data: assets } = await getAsset({ params });
+
+  const chooseAssetKeyboard = (() => {
+    const buttons = assets.map((asset) => {
+      return [asset.uid];
+    });
+    return Markup.keyboard(buttons).oneTime(true).resize(true);
+  })();
+  return chooseAssetKeyboard;
+};

@@ -41,13 +41,24 @@ export async function createOrder({
   branchPublicName,
   branchId,
   manager_id,
+  asset_id,
 }) {
   const order_type = 185289;
+  // {
+  //   "id": 6728287,
+  //   "name": "Номер авто (автозапись)",
+  //   "type": 1
+  // },
+  // {
+  //   "id": 6728288,
+  //   "name": "Город (автозапись)",
+  //   "type": 1
+  // },
   const custom_fields = {
     f5294177: "test", // автопарк
     f5294178: 5.0, // Пробег одонометр
-    f6728287: plateNumber, // номер авто
-    f6728288: branchPublicName, // название бранча(города)
+    6728287: plateNumber, // номер авто
+    6728288: branchPublicName, // название бранча(города)
   };
   const params = {
     order_type,
@@ -57,6 +68,7 @@ export async function createOrder({
     scheduled_for: scheduledFor,
     custom_fields,
     manager_id,
+    asset_id,
     // ad_campaign_id,
   };
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}`;
@@ -260,6 +272,20 @@ if (process.env.REMONLINE_MODE == "dev") {
   })();
 }
 export async function createAsset({ uid }) {
+  const params = {
+    uid,
+    group: "test",
+    brand: "test",
+    color: "test",
+    year: "2022",
+    model: "test",
+    owner_id: 33715361,
+    custom_fields: {
+      5269820: "233",
+      8088870: "2300",
+      7280143: "asdd1233",
+    },
+  };
   const url = `${process.env.REMONLINE_API}/warehouse/assets`;
   const options = {
     method: "POST",
@@ -268,23 +294,15 @@ export async function createAsset({ uid }) {
       "content-type": "application/json",
       authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
     },
+
+    body: JSON.stringify(params),
   };
 
   const response = await fetch(url, options);
   const data = await response.json();
 
   const { success } = data;
-  if (!success) {  body: JSON.stringify({
-    uid: 'pp3004ss',
-    group: 'test',
-    brand: 'test',
-    model: 'test',
-    year: '2050',
-    owner_id: 43,
-    warehouse_id: 999999999,
-    custom_fields: '{"f5269820":"289","f7280143":"289","f8088870":"289",}',
-    color: 'test'
-  })
+  if (!success) {
     const { message, code } = data;
     const { validation } = message;
 
@@ -305,4 +323,53 @@ export async function createAsset({ uid }) {
     });
     return;
   }
+  console.log(params, "asset has been created");
+}
+export async function getAsset({ params }) {
+  let query_params = `?token=${process.env.REMONLINE_API_TOKEN}`;
+  if (params?.licensePlate) {
+    query_params += `&uid[]=${params.licensePlate}`;
+  }
+  if (params?.remonline_id) {
+    query_params += `&owner_id[]=${params.remonline_id}`;
+  }
+  const url = `${process.env.REMONLINE_API}/warehouse/assets${query_params}`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
+    },
+  };
+
+  console.log(`requesting url:${url}`);
+
+  const response = await fetch(url, options);
+  console.log({ response });
+  console.log({ response });
+  console.log({ response });
+  const data = await response.json();
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
+
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "getAsset", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await getAsset({ params });
+    }
+
+    console.error({
+      function: "getAsset",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
+  return data;
 }

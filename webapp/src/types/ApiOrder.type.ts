@@ -61,7 +61,7 @@ interface Client {
   address: string;
   discountCode: string;
   discount: Discount;
-  customFields: ClientCustomFields;
+  custom_fields: ClientCustomFields;
 }
 
 interface RootCustomFields {
@@ -102,6 +102,6 @@ export interface ServiceOrder {
   payed: string; // Or number if it's always numeric
   warrantyDate: string; // Date string, consider `Date` type
   urgent: boolean;
-  customFields: RootCustomFields;
+  custom_fields: RootCustomFields;
   isDeductionRequired: boolean;
 }
