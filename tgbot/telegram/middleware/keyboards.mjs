@@ -13,3 +13,8 @@ const nextKeyborad = (() => {
   const buttons = [["Далі", "Назад"]];
   return Markup.keyboard(buttons).oneTime(true).resize(true);
 })();
+export const turnBackKeyboard=(()=>{
+    const buttons = [["Повернутися назад"]];
+  return Markup.keyboard(buttons).oneTime(true).resize(true);
+
+})()

@@ -1,4 +1,7 @@
-import { chooseAssetTypes } from "../../../../../translate.mjs";
+import {
+  chooseAssetTypes,
+  specialMessages,
+} from "../../../../../translate.mjs";
 import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
 import { ua } from "../../../../../translate.mjs";
 import { generateUserAssetListKeyboard } from "../../../../telegram.utilities.mjs";
@@ -18,11 +21,17 @@ const sendAssetKeyboard = async (ctx) => {
     return navDecision;
   }
   const { remonline_id } = ctx.session;
-  const keyboard = await generateUserAssetListKeyboard({ remonline_id });
-  ctx.reply(ua.createOrder.chooseAsset, keyboard);
+  const { code, keyboard } = await generateUserAssetListKeyboard({
+    remonline_id,
+  });
+  
+  ctx.reply(code===404?"Не знайдено ваших авто":ua.createOrder.chooseAsset, keyboard);
   return ctx.wizard.next();
 };
 const getRemonlineAsset = async (ctx) => {
+  if (ctx.message.text === specialMessages.turnBack) {
+    return ctx.scene.enter(process.env.CREATE_ORDER_SCENE);
+  }
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
     ctx.session.chosenAssetSelectingMode

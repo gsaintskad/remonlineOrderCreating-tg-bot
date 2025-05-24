@@ -61,3 +61,6 @@ export const chooseAssetTypes = {
   registerNewAsset: "Зареєструвати нове авто",
   registerExistingAssetByLicensePlate: "Записати авто за номером",
 };
+export const specialMessages={
+  turnBack:"Повернутися назад"
+}

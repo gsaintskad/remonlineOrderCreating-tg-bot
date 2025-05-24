@@ -57,7 +57,7 @@ const check = async (ctx) => {
       apointmenDate,
       apointmenDateString,
     } = ctx.session.contactData;
-    const { uid: plateNumber } = chosenAsset;
+    const { uid: plateNumber,id:asset_id } = chosenAsset;
     const scheduledFor = new Date(apointmenDate).getTime();
 
     let malfunction = malfunctionType;
@@ -66,7 +66,7 @@ const check = async (ctx) => {
     }
     const manager = await getBranchManager(ctx.session.branch_id);
     const { manager_id } = manager;
-    const asset_id = 6226070;
+
     try {
       const { idLabel, orderId } = await createOrder({
         malfunction,
@@ -107,9 +107,9 @@ const check = async (ctx) => {
       text += `⏰ Дата: ${apointmenDateString}`;
       text += `\n`;
       text += ua.createOrder.apointmentWaitingApproval;
-      await ctx.scene.leave();
       await ctx.answerCbQuery("👌");
       await ctx.reply(text, mainKeyboard);
+      await ctx.scene.leave();
       return;
     } catch (e) {
       console.error({

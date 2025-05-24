@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { URLSearchParams } from "url";
 import { Markup } from "telegraf";
 import { getAsset } from "../remonline/remonline.utils.mjs";
+import { turnBackKeyboard } from "./middleware/keyboards.mjs";
 
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);
@@ -69,12 +70,17 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
     remonline_id,
   };
   const { data: assets } = await getAsset({ params });
-
+  if (assets.length === 0) {
+    return { code: 404, keyboard: turnBackKeyboard };
+  }
   const chooseAssetKeyboard = (() => {
     const buttons = assets.map((asset) => {
       return [asset.uid];
     });
-    return Markup.keyboard(buttons).oneTime(true).resize(true);
+    return {
+      code: 200,
+      keyboard: Markup.keyboard(buttons).oneTime(true).resize(true),
+    };
   })();
   return chooseAssetKeyboard;
 };
