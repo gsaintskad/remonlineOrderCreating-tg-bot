@@ -35,7 +35,7 @@ export async function resetRemonlineId({ telegramId }) {
 export async function getRemonlineIdByTelegramId({ telegramId }) {
   const sql = `SELECT remonline_id from telegram_users WHERE telegram_id= ?`;
   const resp = await db.get(sql,  telegramId);
-  console.log({resp})
+  // console.log({resp})
   return resp;
 }
 export async function getBranchList() {

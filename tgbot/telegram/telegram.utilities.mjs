@@ -78,3 +78,19 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
   })();
   return chooseAssetKeyboard;
 };
+export const stayInSpecialNewOrderSubscene = ({
+  subSceneSet,
+  targetSubscene,
+}) => {
+  return (ctx, currentSubscene) => {
+    const isPossibleSubscene =
+      Object.values(subSceneSet).includes(currentSubscene);
+    if (!isPossibleSubscene) {
+      return ctx.wizard.back();
+    }
+    const isTargetSubscene = currentSubscene === targetSubscene;
+    if (isPossibleSubscene && !isTargetSubscene) {
+      return ctx.wizard.next();
+    }
+  };
+};

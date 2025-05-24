@@ -9,6 +9,7 @@ export const ua = {
     openOrderListBtn: "Переглянути",
   },
   createOrder: {
+    
     chooseAsset: "Виберіть будь ласка авто зі списку 🚙",
     chooseAssetSelectingMode: "Як бажаєте записати авто 🚙?",
     askPlateNumber: "🚙 Напишіть номер авто",

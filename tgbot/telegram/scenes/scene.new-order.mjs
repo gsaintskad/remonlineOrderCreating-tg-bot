@@ -8,6 +8,8 @@ import {
   getBranchManager,
 } from "../../remonline/remonline.queries.mjs";
 import { generateUserAssetListKeyboard } from "../telegram.utilities.mjs";
+import { chooseListedAssetSubscene } from "./subscenes/new-order/subscene.choose-listed-asset.mjs";
+import { registerNewAssetSubScene } from "./subscenes/new-order/subscene.new-asset.mjs";
 
 const isDataCorrentBtm = (() => {
   return Markup.inlineKeyboard([
@@ -30,28 +32,16 @@ const malfunctionTypesKeyboard = (() => {
 const chooseAssetKeyboard = (() => {
   const buttons = [
     [chooseAssetTypes.listMyAssets],
-    [
-      chooseAssetTypes.registerNewAsset,
-      chooseAssetTypes.registerExistingAssetByLicensePlate,
-    ],
+    [chooseAssetTypes.registerNewAsset],
   ];
   return Markup.keyboard(buttons).oneTime(true).resize(true);
 })();
 
 export const createOrderScene = new Scenes.WizardScene(
   process.env.CREATE_ORDER_SCENE,
-  (ctx) => {
-    ctx.reply(ua.createOrder.askPlateNumber, Markup.removeKeyboard());
-    return ctx.wizard.next();
-  },
   async (ctx) => {
     ctx.wizard.state.contactData = {};
-    if (ctx.message?.text?.length != 8) {
-      ctx.reply(ua.createOrder.wrongPlateNumber);
-      return;
-    }
-
-    ctx.wizard.state.contactData.plateNumber = ctx.message.text;
+    ctx.wizard.state.contactData.chosenAsset = {};
     ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
     return ctx.wizard.next();
   },
@@ -61,24 +51,29 @@ export const createOrderScene = new Scenes.WizardScene(
       !ctx.wizard.state.contactData.chosenAsset
     ) {
       ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
+      console.error('user hadnt chose asset selecting mode')
       return;
     }
+    ctx.session.chosenAssetSelectingMode = ctx.message.text;
     const remonline_id = ctx.session.remonline_id;
-    if (ctx.message.text === chooseAssetTypes.listMyAssets) {
+    if (
+      ctx.session.chosenAssetSelectingMode === chooseAssetTypes.listMyAssets
+    ) {
       const keyboard = await generateUserAssetListKeyboard({ remonline_id });
       ctx.reply(ua.createOrder.chooseAsset, keyboard);
       return ctx.wizard.next();
     } else if (
-      ctx.message.text === chooseAssetTypes.registerExistingAssetByLicensePlate
+      ctx.session.chosenAssetSelectingMode ===
+      chooseAssetTypes.registerExistingAssetByLicensePlate
     ) {
       //////////////
-    } else if (ctx.message.text === chooseAssetTypes.registerNewAsset) {
-      //////////
     } else {
       ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
       return;
     }
   },
+  ...chooseListedAssetSubscene,
+  ...registerNewAssetSubScene,
   async (ctx) => {
     if (
       !Object.values(chooseAssetTypes).includes(ctx.message?.text) &&
@@ -87,8 +82,6 @@ export const createOrderScene = new Scenes.WizardScene(
       ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
       return;
     }
-
-    ctx.wizard.state.contactData.plateNumber = ctx.message.text;
     ctx.reply(ua.createOrder.pickMalfunctionType, malfunctionTypesKeyboard);
     return ctx.wizard.next();
   },

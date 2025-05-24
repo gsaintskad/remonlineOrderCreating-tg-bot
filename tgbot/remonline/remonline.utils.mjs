@@ -11,7 +11,7 @@ async function getOrderLable(orderId) {
     `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`
   );
   const data = await response.json();
-  console.log("lable data resp:", data);
+  // console.log("lable data resp:", data);
   const { success } = data;
   if (!success) {
     const { message } = data;
@@ -81,7 +81,7 @@ export async function createOrder({
   const response = await fetch(url, options);
   const data = await response.json();
 
-  console.log({ url, params, data });
+  // console.log({ url, params, data });
 
   const { success } = data;
   if (!success) {
@@ -116,7 +116,7 @@ export async function createOrder({
 
   const { id } = data.data;
   const { idLabel } = await getOrderLable(id);
-  console.log("createOrder return:", data, id, idLabel);
+  console.log("createOrder return:", id, idLabel);
   return { id, idLabel };
 }
 
@@ -177,7 +177,7 @@ export async function createClient({
     requestBody.email = email;
   }
 
-  console.log("Request Payload:", JSON.stringify(requestBody, null, 2)); // Debugging output
+  // console.log("Request Payload:", JSON.stringify(requestBody, null, 2)); // Debugging output
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
     method: "POST",
@@ -202,7 +202,6 @@ export async function createClient({
 export const getOrders = async (params) => {
   try {
     const token = await remonlineTokenReturn(true);
-    console.log({ token });
     const sdk = remonline.auth(token);
 
     // const response=await remonline.getOrders(params);
@@ -323,7 +322,6 @@ export async function createAsset({ uid }) {
     });
     return;
   }
-  console.log(params, "asset has been created");
 }
 export async function getAsset({ params }) {
   let query_params = `?token=${process.env.REMONLINE_API_TOKEN}`;
@@ -345,9 +343,6 @@ export async function getAsset({ params }) {
   console.log(`requesting url:${url}`);
 
   const response = await fetch(url, options);
-  console.log({ response });
-  console.log({ response });
-  console.log({ response });
   const data = await response.json();
   const { success } = data;
   if (!success) {

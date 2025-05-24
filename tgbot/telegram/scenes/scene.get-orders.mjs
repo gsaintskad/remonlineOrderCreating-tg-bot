@@ -22,11 +22,6 @@ export const getOrdersScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    const response = await getOrders();
-    console.log(response);
-    return ctx.wizard.next();
-  },
-  async (ctx) => {
     const { data, from } = ctx.update?.callback_query || {};
     if (data === 'open_web_app') {
       // console.log("open web_app...",            ctx.wizard.userData.remonlin_id);
