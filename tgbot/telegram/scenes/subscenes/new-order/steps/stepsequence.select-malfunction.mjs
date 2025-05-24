@@ -1,35 +1,45 @@
 import { ua } from "../../../../../translate.mjs";
 import { Markup } from "telegraf";
+import { malfunctionTypes } from "../../../../../translate.mjs";
 
+const malfunctionTypesKeyboard = (() => {
+  const buttons = [
+    [malfunctionTypes.chassis],
+    [malfunctionTypes.electrical],
+    [malfunctionTypes.bodywork],
+    [malfunctionTypes.maintenance, malfunctionTypes.other],
+  ];
+  return Markup.keyboard(buttons).oneTime(true).resize(true);
+})();
 const selectMalfunction = async (ctx) => {
   if (
     !Object.values(malfunctionTypes).includes(ctx.message?.text) &&
-    !ctx.wizard.state.contactData.malfunctionType
+    !ctx.session.contactData.malfunctionType
   ) {
     ctx.reply(ua.createOrder.pickMalfunctionType, malfunctionTypesKeyboard);
     return;
   }
 
-  ctx.wizard.state.contactData.malfunctionType ??= ctx.message?.text;
+  ctx.session.contactData.malfunctionType ??= ctx.message?.text;
 
   if (!ctx.message?.text) {
     ctx.reply(ua.createOrder.askMalfunction, Markup.removeKeyboard());
     return;
   }
 
-  if (ctx.wizard.state.contactData.waitingMalfunctionDescription) {
-    ctx.wizard.state.contactData.malfunctionDescription = ctx.message?.text;
+  if (ctx.session.contactData.waitingMalfunctionDescription) {
+    ctx.session.contactData.malfunctionDescription = ctx.message?.text;
   }
 
   if (
-    !ctx.wizard.state.contactData.malfunctionDescription &&
+    !ctx.session.contactData.malfunctionDescription &&
     ctx.message?.text == malfunctionTypes.other
   ) {
-    ctx.wizard.state.contactData.waitingMalfunctionDescription = true;
+    ctx.session.contactData.waitingMalfunctionDescription = true;
     ctx.reply(ua.createOrder.askMalfunction, Markup.removeKeyboard());
     return;
   }
+  ctx.reply(JSON.stringify(ctx.session.contactData.chosenAsset));
+  ctx.scene.leave();
 };
-export const selectMalfunctionStepSequence=[
-  selectMalfunction
-]
+export const selectMalfunctionStepSequence = [selectMalfunction];
