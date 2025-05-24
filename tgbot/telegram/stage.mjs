@@ -6,6 +6,7 @@ import { getOrdersScene } from "./scenes/scene.get-orders.mjs";
 import { newAssetSubscene } from "./scenes/subscenes/new-order/subscene.new-asset.mjs";
 import { Scenes } from "telegraf";
 import { selectMalfunctionSubscene } from "./scenes/subscenes/new-order/subscene.select-malfunction.mjs";
+import { orderSummarySubscene } from "./scenes/subscenes/new-order/subscene.order-summary.mjs";
 
 const mainScenes = [
   createRemonlineId,
@@ -17,6 +18,7 @@ const subscenes = [
   selectAssetSubscene,
   newAssetSubscene,
   selectMalfunctionSubscene,
+  orderSummarySubscene,
 ];
 
 export const stage = new Scenes.Stage([...mainScenes, ...subscenes]);

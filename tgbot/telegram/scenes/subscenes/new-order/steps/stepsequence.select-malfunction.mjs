@@ -40,6 +40,6 @@ const selectMalfunction = async (ctx) => {
     return;
   }
   ctx.reply(JSON.stringify(ctx.session.contactData.chosenAsset));
-  ctx.scene.leave();
+  ctx.scene.enter(process.env.ORDER_SUMMARY_SUBSCENE);
 };
 export const selectMalfunctionStepSequence = [selectMalfunction];
