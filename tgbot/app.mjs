@@ -77,12 +77,6 @@ bot.use(stage.middleware());
       res.status(500).json({ error: "Internal server error" });
     }
   });
-  // На сервере, в вашем Express приложении:
-  // Убедитесь, что импортированы verifyTelegramWebAppData и getOrders
-  // const { verifyTelegramWebAppData } = require('./path-to-your-verifier'); // или import
-  // const { getOrders } = require('./remonline/remonline.utils.mjs'); // или import
-
-  // Используем express.text() для этого эндпоинта, так как клиент будет слать initData как строку
   app.post("/api/orders", express.text({ type: "*/*" }), async (req, res) => {
     const initDataString = req.body; // initData будет строкой в теле запроса
     const botToken = process.env.TELEGRAM_API_KEY;
