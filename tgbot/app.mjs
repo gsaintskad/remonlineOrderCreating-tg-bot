@@ -1,13 +1,10 @@
-import { Telegraf, session, Scenes } from "telegraf";
+import { Telegraf, session } from "telegraf";
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import { createOrderScene } from "./telegram/scenes/scene.new-order.mjs";
-import { selectAssetSubscene } from "./telegram/scenes/subscenes/new-order/subscene.select-asset.mjs";
-import { createRemonlineId } from "./telegram/scenes/scene.new-remonline-id.mjs";
-import { editUserScene } from "./telegram/scenes/scene.user-edit-scene.mjs";
 import { dbLogger } from "./telegram/middleware/db-logger.mjs";
+import { stage } from "./telegram/stage.mjs";
 import {
   onStart,
   onReset,
@@ -16,14 +13,12 @@ import {
 } from "./telegram/middleware/start-handler.mjs";
 import { keyboardText } from "./translate.mjs";
 import { remonlineTokenToEnv } from "./remonline/remonline.api.mjs";
-import { getOrdersScene } from "./telegram/scenes/scene.get-orders.mjs";
 import { getOrders } from "./remonline/remonline.utils.mjs";
 import {
   generateUserAssetListKeyboard,
   verifyTelegramWebAppData,
 } from "./telegram/telegram.utilities.mjs";
 import { getRemonlineIdByTelegramId } from "./telegram/telegram.queries.mjs";
-import { newAssetSubscene } from "./telegram/scenes/subscenes/new-order/subscene.new-asset.mjs";
 
 // Load environment variables
 dotenv.config();
@@ -39,14 +34,7 @@ const remonline_id = 33715361;
 // await generateUserAssetListKeyboard({ remonline_id });
 
 const bot = new Telegraf(process.env.TELEGRAM_API_KEY);
-const stage = new Scenes.Stage([
-  createRemonlineId,
-  createOrderScene,
-  editUserScene,
-  getOrdersScene,
-  selectAssetSubscene,
-  newAssetSubscene,
-]);
+
 const app = express();
 app.use(cors());
 
