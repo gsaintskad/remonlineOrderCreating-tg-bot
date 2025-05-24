@@ -32,7 +32,10 @@ const getRemonlineAsset = async (ctx) => {
   ctx.session.contactData.chosenAsset.licensePlate = ctx.message.text;
   console.log(ctx.session.contactData.chosenAsset);
   ctx.reply("leaving scene...");
-  return ctx.scene.leave();
+  return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 
-export const chooseListedAssetSubscene = [sendAssetKeyboard, getRemonlineAsset];
+export const selectListedAssetStepSequence = [
+  sendAssetKeyboard,
+  getRemonlineAsset,
+];

@@ -47,7 +47,7 @@ const getBrand = async (ctx) => {
   return ctx.wizard.next();
 };
 
-export const registerNewAssetSubScene = [
+export const registerNewAssetStepSequence = [
   getLicensePlate,
   verifyNumber,
   getBrand,
