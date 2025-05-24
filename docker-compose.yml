@@ -17,7 +17,7 @@ services:
       - m_net
     depends_on:
       - webapp
-      - tgbot
+      #- tgbot
   webapp:
     build:
       context: ./webapp 

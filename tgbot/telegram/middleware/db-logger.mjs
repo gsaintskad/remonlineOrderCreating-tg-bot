@@ -1,7 +1,7 @@
 import { isUserSaved, saveNewUser } from '../telegram.queries.mjs';
 
 export async function dbLogger(ctx, next) {
-  console.log('\n\n\n\n\n\n', ctx, '\n\n\n\n\n\n');
+  // console.log('\n\n\n\n\n\n', ctx, '\n\n\n\n\n\n');
   if (ctx.session.saved) {
     await next();
     return;

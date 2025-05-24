@@ -1,7 +1,7 @@
-import fetch from 'node-fetch';
-import { remonlineTokenReturn, remonlineTokenToEnv } from './remonline.api.mjs';
-import { message } from 'telegraf/filters';
-import remonline from '@api/remonline';
+import fetch from "node-fetch";
+import { remonlineTokenReturn, remonlineTokenToEnv } from "./remonline.api.mjs";
+import { message } from "telegraf/filters";
+import remonline from "@api/remonline";
 
 async function getOrderLable(orderId) {
   console.log(
@@ -11,13 +11,13 @@ async function getOrderLable(orderId) {
     `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`
   );
   const data = await response.json();
-  console.log('lable data resp:', data);
+  // console.log("lable data resp:", data);
   const { success } = data;
   if (!success) {
     const { message } = data;
     const { validation } = message;
     console.error({
-      function: 'getOrderLable',
+      function: "getOrderLable",
       message,
       validation,
       status: response.status(),
@@ -41,13 +41,24 @@ export async function createOrder({
   branchPublicName,
   branchId,
   manager_id,
+  asset_id,
 }) {
-    const order_type= 185289;
+  const order_type = 185289;
+  // {
+  //   "id": 6728287,
+  //   "name": "Номер авто (автозапись)",
+  //   "type": 1
+  // },
+  // {
+  //   "id": 6728288,
+  //   "name": "Город (автозапись)",
+  //   "type": 1
+  // },
   const custom_fields = {
-    f5294177: 'test', // автопарк
-    f5294178: 5.0,// Пробег одонометр
-    f6728287: plateNumber,// номер авто
-    f6728288: branchPublicName,// название бранча(города)
+    f5294177: "test", // автопарк
+    f5294178: 5.0, // Пробег одонометр
+    6728287: plateNumber, // номер авто
+    6728288: branchPublicName, // название бранча(города)
   };
   const params = {
     order_type,
@@ -57,54 +68,57 @@ export async function createOrder({
     scheduled_for: scheduledFor,
     custom_fields,
     manager_id,
+    asset_id,
     // ad_campaign_id,
   };
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}`;
   const options = {
-    method: 'POST',
-    headers: { accept: 'application/json', 'content-type': 'application/json' },
+    method: "POST",
+    headers: { accept: "application/json", "content-type": "application/json" },
     body: JSON.stringify(params),
   };
 
   const response = await fetch(url, options);
   const data = await response.json();
 
-  console.log({ url,params, data });
- 
-    const { success } = data;
-    if (!success) {
-      const { message, code } = data;
-      const { validation } = message;
+  // console.log({ url, params, data });
 
-      if (response.status == 403 && code == 101||response.status == 401 && code == 401) {
-        console.info({ function: 'createOrder', message: 'Get new Auth' });
-        await remonlineTokenToEnv(true);
-        return await createOrder({
-          malfunction,
-          scheduledFor,
-          plateNumber,
-          remonlineId,
-          branchPublicName,
-          branchId,
-          // managerId,
-        });
-      }
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
 
-      console.error({
-        function: 'createOrder',
-        message,
-        validation,
-        status: response.status,
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "createOrder", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await createOrder({
+        malfunction,
+        scheduledFor,
+        plateNumber,
+        remonlineId,
+        branchPublicName,
+        branchId,
+        // managerId,
       });
-      return;
     }
 
-    const { id } = data.data;
-    const { idLabel } = await getOrderLable(id);
-    console.log('createOrder return:', data, id, idLabel);
-    return { id, idLabel };
-}
+    console.error({
+      function: "createOrder",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
 
+  const { id } = data.data;
+  const { idLabel } = await getOrderLable(id);
+  console.log("createOrder return:", id, idLabel);
+  return { id, idLabel };
+}
 
 export async function getClientsByPhone({ nationalNumber }) {
   const response = await fetch(
@@ -118,13 +132,13 @@ export async function getClientsByPhone({ nationalNumber }) {
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: 'getClientsByPhone', message: 'Get new Auth' });
+      console.info({ function: "getClientsByPhone", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await getClientsByPhone({ nationalNumber });
     }
 
     console.error({
-      function: 'createOrder',
+      function: "createOrder",
       message,
       validation,
       status: response.status,
@@ -143,18 +157,18 @@ export async function createClient({
   telegramId,
   branchPublicName,
 }) {
-  const [first_name, last_name] = fullName.split(' ');
+  const [first_name, last_name] = fullName.split(" ");
 
   // Prepare request body correctly as a JSON object
   const requestBody = {
     token: process.env.REMONLINE_API_TOKEN,
     first_name,
-    last_name: last_name || 'n0_2nd_Name',
+    last_name: last_name || "n0_2nd_Name",
     phone: [number], // Phone must be an array
     custom_fields: {
       6729251: telegramId.toString(),
-      5370833: 'Зовнішній клієнт',
-      f5370833: 'Зовнішній клієнт',
+      5370833: "Зовнішній клієнт",
+      f5370833: "Зовнішній клієнт",
       6879276: branchPublicName,
     },
   };
@@ -163,11 +177,11 @@ export async function createClient({
     requestBody.email = email;
   }
 
-  console.log('Request Payload:', JSON.stringify(requestBody, null, 2)); // Debugging output
+  // console.log("Request Payload:", JSON.stringify(requestBody, null, 2)); // Debugging output
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' }, // Ensure JSON content type
+    method: "POST",
+    headers: { "Content-Type": "application/json" }, // Ensure JSON content type
     body: JSON.stringify(requestBody), // Send as JSON, NOT as x-www-form-urlencoded
   });
 
@@ -175,8 +189,8 @@ export async function createClient({
 
   if (!data.success) {
     console.error({
-      function: 'createClient',
-      message: JSON.stringify(data.message) || 'Unknown error',
+      function: "createClient",
+      message: JSON.stringify(data.message) || "Unknown error",
       validation: data.validation,
       status: response.status,
     });
@@ -186,16 +200,9 @@ export async function createClient({
   return { clientId: data.data.id };
 }
 export const getOrders = async (params) => {
-  // remonlineTokenToEnv().then((response)=>{remonline.auth(process.env.REMONLINE_API_KEY)})
-  //     .then(()=>remonline.getOrders())
-  //     .then((response)=>{ console.log(response) })
-  //     .catch((error)=>console.log(error));
   try {
-    // await remonlineTokenToEnv(true);
-    // const sdk=await remonline.auth('7f1a27773dfd3f2e6fb04d2c05281901bff387ea');
-    // console.log(`api token before fetching data ${process.env.REMONLINE_API_TOKEN}`);
-    // const sdk=await remonline.auth(process.env.REMONLINE_API_KEY);
-    const sdk = await remonline.auth(await remonlineTokenReturn());
+    const token = await remonlineTokenReturn(true);
+    const sdk = remonline.auth(token);
 
     // const response=await remonline.getOrders(params);
     // // console.log(response);
@@ -207,18 +214,18 @@ export const getOrders = async (params) => {
 };
 export async function editClient({ id, branchPublicName }) {
   const params = new URLSearchParams();
-  params.append('token', process.env.REMONLINE_API_TOKEN);
-  params.append('id', id);
+  params.append("token", process.env.REMONLINE_API_TOKEN);
+  params.append("id", id);
   params.append(
-    'custom_fields',
+    "custom_fields",
     JSON.stringify({
       6879276: branchPublicName,
     })
   );
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    method: "PUT",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params,
   });
 
@@ -229,7 +236,7 @@ export async function editClient({ id, branchPublicName }) {
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: 'editClient', message: 'Get new Auth' });
+      console.info({ function: "editClient", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await editClient({
         id,
@@ -238,7 +245,7 @@ export async function editClient({ id, branchPublicName }) {
     }
 
     console.error({
-      function: 'editClient',
+      function: "editClient",
       message,
       validation,
       status: response.status,
@@ -251,15 +258,132 @@ export async function editClient({ id, branchPublicName }) {
   return { clientId };
 }
 
-if (process.env.REMONLINE_MODE == 'dev') {
+if (process.env.REMONLINE_MODE == "dev") {
   (async () => {
     await remonlineTokenToEnv();
     createOrder({
-      malfunction: '?',
+      malfunction: "?",
       scheduledFor: new Date().getTime(),
-      plateNumber: '??',
-      telegramId: '???',
+      plateNumber: "??",
+      telegramId: "???",
     });
     // getClientsByPhone({ nationalNumber: '0931630786' })
   })();
+}
+export async function createAsset({
+  uid,
+  brand,
+  carGroup,
+  color,
+  year,
+  model,
+  mileage,
+  engineVolume,
+  myTaxiCrmId,
+  client_id,
+}) {
+  const params = {
+    uid,
+    group: carGroup,
+    brand,
+    color,
+    year,
+    model,
+    owner_id: client_id,
+    custom_fields: {
+      5269820: mileage, //probig
+      8088870: engineVolume, //Об'єм двигуна (куб.см)
+      7280143: myTaxiCrmId, //MY_TAXI_CRM_ID
+    },
+  };
+  const url = `${process.env.REMONLINE_API}/warehouse/assets`;
+  const options = {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      "content-type": "application/json",
+      authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
+    },
+
+    body: JSON.stringify(params),
+  };
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
+
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "createAsset", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await createAsset({ uid });
+    }
+
+    console.error({
+      function: "createAsset",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
+  return { asset: data };
+}
+export async function getAsset({ params }) {
+  let query_params = `?token=${process.env.REMONLINE_API_TOKEN}`;
+  if (!params || Object.keys(params).length == 0) {
+    console.error(`requieres params`);
+  }
+  if (params?.licensePlate) {
+    query_params += `&uid[]=${params.licensePlate}`;
+  }
+  if (params?.remonline_id) {
+    query_params += `&owner_id[]=${params.remonline_id}`;
+  }
+  if (params?.asset_id) {
+    query_params += `&ids[]=${params.asset_id}`;
+  }
+
+  const url = `${process.env.REMONLINE_API}/warehouse/assets${query_params}`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
+    },
+  };
+
+  console.log(`requesting url:${url}`);
+
+  const response = await fetch(url, options);
+  const data = await response.json();
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
+
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
+      console.info({ function: "getAsset", message: "Get new Auth" });
+      await remonlineTokenToEnv(true);
+      return await getAsset({ params });
+    }
+
+    console.error({
+      function: "getAsset",
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
+  return data;
 }

@@ -15,7 +15,7 @@
     "telegram",
     "remonline"
   ],
-  "author": "bobozlo",
+  "author": "gsaintskad",
   "license": "ISC",
   "dependencies": {
     "@api/remonline": "file:.api/apis/remonline",
