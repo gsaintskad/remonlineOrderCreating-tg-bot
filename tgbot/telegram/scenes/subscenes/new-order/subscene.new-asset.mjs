@@ -8,6 +8,8 @@ const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   targetSubscene: chooseAssetTypes.registerNewAsset,
 });
 const getLicensePlate = async (ctx) => {
+
+  console.log('trying to create new asset')
   const navDecision = stayInNewAssetRegitraionSubscene(
     ctx,
     ctx.session.chosenAssetSelectingMode

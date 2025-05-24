@@ -8,14 +8,15 @@ const stayInChooseListedAssetSubscene = stayInSpecialNewOrderSubscene({
 });
 
 const sendAssetKeyboard = async (ctx) => {
+  console.log('trying to send asset keyboard')
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
     ctx.session.chosenAssetSelectingMode
   );
-  if (navDecision) {
+  if (navDecision && ctx.message.text !== "Далі") {
     return navDecision;
   }
-  const {remonline_id}=ctx.session
+  const { remonline_id } = ctx.session;
   const keyboard = await generateUserAssetListKeyboard({ remonline_id });
   ctx.reply(ua.createOrder.chooseAsset, keyboard);
   return ctx.wizard.next();

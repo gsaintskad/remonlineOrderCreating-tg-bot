@@ -3,7 +3,7 @@ import { chooseListedAssetSubscene } from "./subscenes/new-order/subscene.choose
 import { registerNewAssetSubScene } from "./subscenes/new-order/subscene.new-asset.mjs";
 import { chooseAssetTypes } from "../../translate.mjs";
 const nextScene = [];
-export const selectAssetScene = new Scenes.WizardScene(
-  process.env.SELECT_ASSET_SCENE,
-  ...chooseListedAssetSubscene
+export const newAssetScene = new Scenes.WizardScene(
+  process.env.NEW_ASSET_SCENE,
+  ...registerNewAssetSubScene
 );

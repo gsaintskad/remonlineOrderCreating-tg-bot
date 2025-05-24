@@ -36,6 +36,10 @@ const chooseAssetKeyboard = (() => {
   ];
   return Markup.keyboard(buttons).oneTime(true).resize(true);
 })();
+const nextKeyborad = (() => {
+  const buttons = [["Далі", "Назад"]];
+  return Markup.keyboard(buttons).oneTime(true).resize(true);
+})();
 
 export const createOrderScene = new Scenes.WizardScene(
   process.env.CREATE_ORDER_SCENE,
@@ -53,16 +57,19 @@ export const createOrderScene = new Scenes.WizardScene(
     }
     ctx.session.chosenAssetSelectingMode = ctx.message.text;
     process.env.CHOSEN_ASSET_SELECTING_MODE = ctx.message.text;
-    console.log("next subscene:", ctx.session.chosenAssetSelectingMode);
-    ctx.reply("als;kdas;lk", Markup.removeKeyboard());
+
+    if (ctx.session.chosenAssetSelectingMode == chooseAssetTypes.listMyAssets) {
+      return ctx.scene.enter(process.env.SELECT_ASSET_SCENE);
+    }
+    if (
+      ctx.session.chosenAssetSelectingMode == chooseAssetTypes.registerNewAsset
+    ) {
+      return ctx.scene.enter(process.env.NEW_ASSET_SCENE);
+    }
+
+    return;
   },
-  async (ctx) => {
-    ctx.reply("als;kdas;lk", Markup.removeKeyboard());
-    console.log("next2 subscene:", ctx.session.chosenAssetSelectingMode);
-  },
-  ...(process.env.CHOSEN_ASSET_SELECTING_MODE == chooseAssetTypes.listMyAssets
-    ? chooseListedAssetSubscene
-    : registerNewAssetSubScene),
+
   async (ctx) => {
     if (
       !Object.values(chooseAssetTypes).includes(ctx.message?.text) &&
