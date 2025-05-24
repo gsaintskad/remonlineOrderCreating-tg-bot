@@ -280,9 +280,9 @@ export async function createAsset({ uid }) {
     model: "test",
     owner_id: 33715361,
     custom_fields: {
-      5269820: "233",
-      8088870: "2300",
-      7280143: "asdd1233",
+      5269820: "233",//probig
+      8088870: "2300",//Об'єм двигуна (куб.см)
+      7280143: "asdd1233",//MY_TAXI_CRM_ID
     },
   };
   const url = `${process.env.REMONLINE_API}/warehouse/assets`;

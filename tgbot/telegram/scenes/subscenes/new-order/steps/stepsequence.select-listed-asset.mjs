@@ -24,8 +24,11 @@ const sendAssetKeyboard = async (ctx) => {
   const { code, keyboard } = await generateUserAssetListKeyboard({
     remonline_id,
   });
-  
-  ctx.reply(code===404?"Не знайдено ваших авто":ua.createOrder.chooseAsset, keyboard);
+
+  ctx.reply(
+    code === 404 ? "Не знайдено ваших авто" : ua.createOrder.chooseAsset,
+    keyboard
+  );
   return ctx.wizard.next();
 };
 const getRemonlineAsset = async (ctx) => {
