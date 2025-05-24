@@ -203,26 +203,16 @@ export async function getOrders(
   _page = 1,
   _orders = []
 ) {
-  let idLabelsUrl = "";
-  if (idLabels) {
-    for (let idLabel of idLabels) {
-      idLabelsUrl += `&id_labels[]=${idLabel}`;
-    }
-  }
-  let idUrl = "";
-
-  if (ids) {
-    for (let id of ids) {
-      idUrl += `&ids[]=${id}`;
-    }
-  }
-  const sort_dir_url = sort_dir ? `&sort_dir=${sort_dir}` : "";
-  const modified_at_url = modified_at ? `&modified_at[]=${modified_at}` : "";
-  const client_id_url = client_id ? `&client_ids=${client_id}` : "";
-
-  const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&page=${_page}${idLabelsUrl}${idUrl}${sort_dir_url}${modified_at_url}${client_id_url}`;
-  console.log({ url });
-  const response = await fetch(url);
+  const url = `${process.env.REMONLINE_API}/order/?clients_ids=${client_id}`;
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
+    },
+  };
+  console.log({ url, options });
+  const response = await fetch(url, options);
 
   if (
     response.status == 414 ||
@@ -246,7 +236,11 @@ export async function getOrders(
     if ((response.status == 403 && code == 101) || response.status == 401) {
       console.info({ function: "getOrders", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
-      return await getOrders({idLabels, ids, modified_at, sort_dir, client_id}, _page, _orders);
+      return await getOrders(
+        { idLabels, ids, modified_at, sort_dir, client_id },
+        _page,
+        _orders
+      );
     }
 
     console.error({
