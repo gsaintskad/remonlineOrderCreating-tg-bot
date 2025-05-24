@@ -46,34 +46,23 @@ export const createOrderScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (
-      !Object.values(chooseAssetTypes).includes(ctx.message?.text) &&
-      !ctx.wizard.state.contactData.chosenAsset
-    ) {
+    if (!Object.values(chooseAssetTypes).includes(ctx.message?.text)) {
       ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
-      console.error('user hadnt chose asset selecting mode')
+      console.error("user hadnt chose asset selecting mode");
       return;
     }
     ctx.session.chosenAssetSelectingMode = ctx.message.text;
-    const remonline_id = ctx.session.remonline_id;
-    if (
-      ctx.session.chosenAssetSelectingMode === chooseAssetTypes.listMyAssets
-    ) {
-      const keyboard = await generateUserAssetListKeyboard({ remonline_id });
-      ctx.reply(ua.createOrder.chooseAsset, keyboard);
-      return ctx.wizard.next();
-    } else if (
-      ctx.session.chosenAssetSelectingMode ===
-      chooseAssetTypes.registerExistingAssetByLicensePlate
-    ) {
-      //////////////
-    } else {
-      ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
-      return;
-    }
+    process.env.CHOSEN_ASSET_SELECTING_MODE = ctx.message.text;
+    console.log("next subscene:", ctx.session.chosenAssetSelectingMode);
+    ctx.reply("als;kdas;lk", Markup.removeKeyboard());
   },
-  ...chooseListedAssetSubscene,
-  ...registerNewAssetSubScene,
+  async (ctx) => {
+    ctx.reply("als;kdas;lk", Markup.removeKeyboard());
+    console.log("next2 subscene:", ctx.session.chosenAssetSelectingMode);
+  },
+  ...(process.env.CHOSEN_ASSET_SELECTING_MODE == chooseAssetTypes.listMyAssets
+    ? chooseListedAssetSubscene
+    : registerNewAssetSubScene),
   async (ctx) => {
     if (
       !Object.values(chooseAssetTypes).includes(ctx.message?.text) &&

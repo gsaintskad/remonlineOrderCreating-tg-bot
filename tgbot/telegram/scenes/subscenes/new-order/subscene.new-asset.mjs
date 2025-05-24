@@ -1,6 +1,7 @@
 import { Markup } from "telegraf";
 import { chooseAssetTypes } from "../../../../translate.mjs";
 import { stayInSpecialNewOrderSubscene } from "../../../telegram.utilities.mjs";
+import { ua } from "../../../../translate.mjs";
 
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
