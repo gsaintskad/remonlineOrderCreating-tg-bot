@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import { remonlineTokenReturn, remonlineTokenToEnv } from "./remonline.api.mjs";
 import { message } from "telegraf/filters";
-import remonline from "@api/remonline";
 
 async function getOrderLable(orderId) {
   console.log(
@@ -199,19 +198,86 @@ export async function createClient({
 
   return { clientId: data.data.id };
 }
-export const getOrders = async (params) => {
-  try {
-    const token = await remonlineTokenReturn(true);
-    const sdk = remonline.auth(token);
-
-    // const response=await remonline.getOrders(params);
-    // // console.log(response);
-    // return response;
-    return await remonline.getOrders(params);
-  } catch (err) {
-    console.error(err);
+export async function getOrders(
+  { idLabels, ids, modified_at, sort_dir,client_id },
+  _page = 1,
+  _orders = []
+) {
+  let idLabelsUrl = '';
+  if (idLabels) {
+    for (let idLabel of idLabels) {
+      idLabelsUrl += `&id_labels[]=${idLabel}`;
+    }
   }
-};
+  let idUrl = '';
+
+  if (ids) {
+    for (let id of ids) {
+      idUrl += `&ids[]=${id}`;
+    }
+  }
+  const sort_dir_url = sort_dir ? `&sort_dir=${sort_dir}` : '';
+  const modified_at_url = modified_at ? `&modified_at[]=${modified_at}` : '';
+  const client_id_url = client_id ? `&client_ids[]=${client_id}` : '';
+
+  const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&page=${_page}${idLabelsUrl}${idUrl}${sort_dir_url}${modified_at_url}${client_id_url}`;
+
+  const response = await fetch(url);
+
+  if (
+    response.status == 414 ||
+    response.status == 503 ||
+    response.status == 502 ||
+    response.status == 504
+  ) {
+    throw await response.text();
+  }
+
+  if (process.env.LOG == 'LOG') {
+    console.log(await response.text());
+  }
+
+  const data = await response.json();
+  const { success } = data;
+  if (!success) {
+    const { message, code } = data;
+    const { validation } = message;
+
+    if (response.status == 403 && code == 101) {
+      console.info({ function: 'getOrders', message: 'Get new Auth' });
+      await remonlineTokenToEnv(true);
+      return await getOrders({ idLabels, ids }, _page, _orders);
+    }
+
+    console.error({
+      function: 'getOrders',
+      message,
+      validation,
+      status: response.status,
+    });
+    return;
+  }
+
+  const { data: orders, count, page } = data;
+
+  const doneOnPrevPage = (page - 1) * 50;
+
+  const leftToFinish = count - doneOnPrevPage - orders.length;
+
+  _orders.push(...orders);
+
+  console.log({ count, page, doneOnPrevPage, leftToFinish });
+
+  if (leftToFinish > 0) {
+    return await getOrders(
+      { idLabels, ids, modified_at, sort_dir },
+      parseInt(page) + 1,
+      _orders
+    );
+  }
+
+  return { orders: _orders, count };
+}
 export async function editClient({ id, branchPublicName }) {
   const params = new URLSearchParams();
   params.append("token", process.env.REMONLINE_API_TOKEN);

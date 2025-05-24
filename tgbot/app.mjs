@@ -111,8 +111,8 @@ bot.use(stage.middleware());
         });
 
         // Используем telegramUserId как client_id для RemOnline
-        const { data: ordersResponseData } = await getOrders({
-          "clients_ids[]": String(remonline_id),
+        const { orders } = await getOrders({
+          client_id: remonline_id,
         });
 
         res.status(200).json({
@@ -120,7 +120,7 @@ bot.use(stage.middleware());
           message: "Data verified and orders fetched",
 
           user: { id: userId },
-          orders: ordersResponseData,
+          orders,
         });
       } catch (error) {
         console.error(

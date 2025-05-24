@@ -27,18 +27,13 @@ export const getHandledOrders = async ({ remonline_id }: getOrdersProps) => {
       body: tg.initData,
     });
 
-    const data = await response.json();
+    const serviceOrders: ServiceOrder[] = await response.json();
 
-    if (!data.success) {
-      throw new Error(data.error || "Authentication failed");
-    }
-
-    console.log("Authentication successful, user data:", data.user);
-
+    
     const clientsSet = new Set<string>();
     const orders: HandledOrder[] = [];
     //@ts-ignore
-    data.orders.data.forEach((order: ServiceOrder) => {
+    serviceOrders.forEach((order: ServiceOrder) => {
       const orderData: HandledOrder = {
         id: order.id,
         client: {
