@@ -218,10 +218,10 @@ export async function getOrders(
   }
   const sort_dir_url = sort_dir ? `&sort_dir=${sort_dir}` : "";
   const modified_at_url = modified_at ? `&modified_at[]=${modified_at}` : "";
-  const client_id_url = client_id ? `&client_ids[]=${client_id}` : "";
+  const client_id_url = client_id ? `&client_ids=${client_id}` : "";
 
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&page=${_page}${idLabelsUrl}${idUrl}${sort_dir_url}${modified_at_url}${client_id_url}`;
-
+  console.log({ url });
   const response = await fetch(url);
 
   if (
@@ -243,10 +243,10 @@ export async function getOrders(
     const { message, code } = data;
     const { validation } = message;
 
-    if (response.status == 403 && code == 101) {
+    if ((response.status == 403 && code == 101) || response.status == 401) {
       console.info({ function: "getOrders", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
-      return await getOrders({ idLabels, ids }, _page, _orders);
+      return await getOrders({idLabels, ids, modified_at, sort_dir, client_id}, _page, _orders);
     }
 
     console.error({
@@ -270,7 +270,7 @@ export async function getOrders(
 
   if (leftToFinish > 0) {
     return await getOrders(
-      { idLabels, ids, modified_at, sort_dir },
+      { idLabels, ids, modified_at, sort_dir, client_id },
       parseInt(page) + 1,
       _orders
     );
