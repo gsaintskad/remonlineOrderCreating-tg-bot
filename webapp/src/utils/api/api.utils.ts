@@ -8,54 +8,56 @@ export function getQueryParam(param: string) {
   const urlParams = new URLSearchParams(window.location.search);
   return urlParams.get(param);
 }
-export const getHandledOrders = async ({ remonline_id }: getOrdersProps) => {
+export const getHandledOrders = async (): Promise<{
+  clientsSet: Set<string>;
+  orders: HandledOrder[];
+}> => {
   //@ts-ignore
   const tg = window.Telegram.WebApp; // Ensure tg is defined
 
-  const authenticateAndFetchOrders = async () => {
-    if (!tg || !tg.initData) {
-      return;
-    }
-
-    // Step 1: Authenticate with the backend
-    console.log("Sending initData for verification:", tg.initData);
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain", // As expected by your express.text() middleware
-      },
-      body: tg.initData,
-    });
-
-    const serviceOrders: ServiceOrder[] = await response.json();
-
-    
-    const clientsSet = new Set<string>();
-    const orders: HandledOrder[] = [];
-    //@ts-ignore
-    serviceOrders.forEach((order: ServiceOrder) => {
-      const orderData: HandledOrder = {
-        id: order.id,
-        client: {
-          name: order.client.name,
-        },
-        status: { color: order.status.color, name: order.status.name },
-        price: order.price,
-        asset: {
-          uid: order.custom_fields?.f6728287 || order.asset?.uid,
-          model: `${order.asset.color} ${order.asset.brand} ${order.asset}`,
-        },
-      };
-      orders.push(orderData);
-      clientsSet.add(orderData.client.name);
-    });
-
+  if (!tg || !tg.initData) {
     return {
-      clientsSet: clientsSet || new Set<string>(),
-      orders: orders || [],
+      clientsSet: new Set<string>(),
+      orders: [] as HandledOrder[],
     };
+  }
+
+  // Step 1: Authenticate with the backend
+  console.log("Sending initData for verification:", tg.initData);
+  const response = await fetch("/api/orders", {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain", // As expected by your express.text() middleware
+    },
+    body: tg.initData,
+  });
+
+  const serviceOrders: ServiceOrder[] = await response.json();
+
+  const clientsSet = new Set<string>();
+  const orders: HandledOrder[] = [];
+  //@ts-ignore
+  serviceOrders.forEach((order: ServiceOrder) => {
+    const orderData: HandledOrder = {
+      id: order.id,
+      client: {
+        name: order.client.name,
+      },
+      status: { color: order.status.color, name: order.status.name },
+      price: order.price,
+      asset: {
+        uid: order.custom_fields?.f6728287 || order.asset?.uid,
+        model: `${order.asset.color} ${order.asset.brand} ${order.asset}`,
+      },
+    };
+    orders.push(orderData);
+    clientsSet.add(orderData.client.name);
+  });
+
+  return {
+    clientsSet: clientsSet || new Set<string>(),
+    orders: orders || [],
   };
-  return await authenticateAndFetchOrders();
 };
 // export const getHandledOrders = async ({ remonline_id }: getOrdersProps) => {
 //   const response = await fetch(

@@ -37,9 +37,7 @@ const OrderTable: FunctionComponent<OrderTableProps> = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const remonline_id = Number(getQueryParam("remonline_id"));
-        //@ts-ignore
-        const { clientsSet, orders } = await getHandledOrders({ remonline_id });
+        const { clientsSet, orders } = await getHandledOrders();
         setClients(clientsSet);
         setOrders(orders);
         console.log(orders);
