@@ -49,7 +49,7 @@ const getRemonlineAsset = async (ctx) => {
   } = await getAsset({ params: { licensePlate } });
   const chosenAsset={...asset,asset_id:asset.id}
   ctx.session.contactData.chosenAsset = chosenAsset;
-  ctx.reply("leaving scene...");
+  
   return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 
