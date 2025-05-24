@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import { registerNewAssetSubScene } from "./steps/stepsequence.new-asset.mjs";
 
-export const newAssetSubscene = new Scenes.WizardScene(
-  process.env.NEW_ASSET_SCENE,
+export const selectMalfunctionSubscene = new Scenes.WizardScene(
+  process.env.SELECT_MALFUNCTION_SCENE,
   ...registerNewAssetSubScene
 );

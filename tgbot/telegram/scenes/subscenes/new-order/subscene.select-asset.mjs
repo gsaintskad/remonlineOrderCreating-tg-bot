@@ -1,5 +1,5 @@
 import { Scenes } from "telegraf";
-import { chooseListedAssetSubscene } from "./steps/stepsequence.choose-listed-asset.mjs";
+import { chooseListedAssetSubscene } from "./steps/stepsequence.select-listed-asset.mjs";
 import { registerNewAssetSubScene } from "./steps/stepsequence.new-asset.mjs";
 import { chooseAssetTypes } from "../../../../translate.mjs";
 const nextScene = [];

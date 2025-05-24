@@ -8,7 +8,7 @@ import {
   getBranchManager,
 } from "../../remonline/remonline.queries.mjs";
 import { generateUserAssetListKeyboard } from "../telegram.utilities.mjs";
-import { chooseListedAssetSubscene } from "./subscenes/new-order/steps/stepsequence.choose-listed-asset.mjs";
+import { chooseListedAssetSubscene } from "./subscenes/new-order/steps/stepsequence.select-listed-asset.mjs";
 import { registerNewAssetSubScene } from "./subscenes/new-order/steps/stepsequence.new-asset.mjs";
 
 const isDataCorrentBtm = (() => {
