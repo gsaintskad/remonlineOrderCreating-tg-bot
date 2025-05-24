@@ -130,7 +130,7 @@ export async function getClientsByPhone({ nationalNumber }) {
     const { message, code } = data;
     const { validation } = message;
 
-    if (response.status == 403 && code == 101) {
+    if ((response.status == 403 && code == 101) || response.status == 401) {
       console.info({ function: "getClientsByPhone", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await getClientsByPhone({ nationalNumber });
@@ -199,26 +199,26 @@ export async function createClient({
   return { clientId: data.data.id };
 }
 export async function getOrders(
-  { idLabels, ids, modified_at, sort_dir,client_id },
+  { idLabels, ids, modified_at, sort_dir, client_id },
   _page = 1,
   _orders = []
 ) {
-  let idLabelsUrl = '';
+  let idLabelsUrl = "";
   if (idLabels) {
     for (let idLabel of idLabels) {
       idLabelsUrl += `&id_labels[]=${idLabel}`;
     }
   }
-  let idUrl = '';
+  let idUrl = "";
 
   if (ids) {
     for (let id of ids) {
       idUrl += `&ids[]=${id}`;
     }
   }
-  const sort_dir_url = sort_dir ? `&sort_dir=${sort_dir}` : '';
-  const modified_at_url = modified_at ? `&modified_at[]=${modified_at}` : '';
-  const client_id_url = client_id ? `&client_ids[]=${client_id}` : '';
+  const sort_dir_url = sort_dir ? `&sort_dir=${sort_dir}` : "";
+  const modified_at_url = modified_at ? `&modified_at[]=${modified_at}` : "";
+  const client_id_url = client_id ? `&client_ids[]=${client_id}` : "";
 
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&page=${_page}${idLabelsUrl}${idUrl}${sort_dir_url}${modified_at_url}${client_id_url}`;
 
@@ -233,7 +233,7 @@ export async function getOrders(
     throw await response.text();
   }
 
-  if (process.env.LOG == 'LOG') {
+  if (process.env.LOG == "LOG") {
     console.log(await response.text());
   }
 
@@ -244,13 +244,13 @@ export async function getOrders(
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: 'getOrders', message: 'Get new Auth' });
+      console.info({ function: "getOrders", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
       return await getOrders({ idLabels, ids }, _page, _orders);
     }
 
     console.error({
-      function: 'getOrders',
+      function: "getOrders",
       message,
       validation,
       status: response.status,
