@@ -39,7 +39,6 @@ const selectMalfunction = async (ctx) => {
     ctx.reply(ua.createOrder.askMalfunction, Markup.removeKeyboard());
     return;
   }
-  ctx.reply(JSON.stringify(ctx.session.contactData.chosenAsset));
   ctx.scene.enter(process.env.ORDER_SUMMARY_SUBSCENE);
 };
 export const selectMalfunctionStepSequence = [selectMalfunction];

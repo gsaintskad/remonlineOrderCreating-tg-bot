@@ -270,19 +270,30 @@ if (process.env.REMONLINE_MODE == "dev") {
     // getClientsByPhone({ nationalNumber: '0931630786' })
   })();
 }
-export async function createAsset({ uid }) {
+export async function createAsset({
+  uid,
+  brand,
+  carGroup,
+  color,
+  year,
+  model,
+  mileage,
+  engineVolume,
+  myTaxiCrmId,
+  client_id,
+}) {
   const params = {
     uid,
-    group: "test",
-    brand: "test",
-    color: "test",
-    year: "2022",
-    model: "test",
-    owner_id: 33715361,
+    group: carGroup,
+    brand,
+    color,
+    year,
+    model,
+    owner_id: client_id,
     custom_fields: {
-      5269820: "233",//probig
-      8088870: "2300",//Об'єм двигуна (куб.см)
-      7280143: "asdd1233",//MY_TAXI_CRM_ID
+      5269820: mileage, //probig
+      8088870: engineVolume, //Об'єм двигуна (куб.см)
+      7280143: myTaxiCrmId, //MY_TAXI_CRM_ID
     },
   };
   const url = `${process.env.REMONLINE_API}/warehouse/assets`;
@@ -322,15 +333,23 @@ export async function createAsset({ uid }) {
     });
     return;
   }
+  return { asset: data };
 }
 export async function getAsset({ params }) {
   let query_params = `?token=${process.env.REMONLINE_API_TOKEN}`;
+  if (!params || Object.keys(params).length == 0) {
+    console.error(`requieres params`);
+  }
   if (params?.licensePlate) {
     query_params += `&uid[]=${params.licensePlate}`;
   }
   if (params?.remonline_id) {
     query_params += `&owner_id[]=${params.remonline_id}`;
   }
+  if (params?.asset_id) {
+    query_params += `&ids[]=${params.asset_id}`;
+  }
+
   const url = `${process.env.REMONLINE_API}/warehouse/assets${query_params}`;
   const options = {
     method: "GET",

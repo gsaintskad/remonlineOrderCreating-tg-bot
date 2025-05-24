@@ -16,7 +16,8 @@ exports.setup = function (options, seedLink) {
 exports.up = function (db, callback) {
   const data = `CREATE TABLE clients_to_assets (
     client_id INTEGER NOT NULL,
-    asset_id INTEGER NOT NULL
+    asset_id INTEGER NOT NULL,
+    asset_uid TEXT NOT NULL
     );`;
   db.runSql(data, function (err) {
     if (err) return console.log(err);
@@ -25,7 +26,7 @@ exports.up = function (db, callback) {
 };
 
 exports.down = function (db, callback) {
-  const data = `DROP TABLE clients_to_assets`;
+  const data = `DROP TABLE clients_to_assets;`;
   db.runSql(data, function (err) {
     if (err) return console.log(err);
     callback();

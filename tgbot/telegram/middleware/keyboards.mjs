@@ -18,3 +18,11 @@ export const turnBackKeyboard=(()=>{
   return Markup.keyboard(buttons).oneTime(true).resize(true);
 
 })()
+export const isDataCorrentBtm = (() => {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback("🟢 Так", "order_is_ok"),
+      Markup.button.callback("🔴 Ні", "wrong_order"),
+    ],
+  ]);
+})();

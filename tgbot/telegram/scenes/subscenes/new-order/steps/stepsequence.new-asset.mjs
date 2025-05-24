@@ -2,8 +2,9 @@ import { Markup } from "telegraf";
 import { chooseAssetTypes } from "../../../../../translate.mjs";
 import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
 import { ua } from "../../../../../translate.mjs";
-import { group } from "console";
-import { SyntheticModule } from "vm";
+import { isDataCorrentBtm } from "../../../../middleware/keyboards.mjs";
+import { createAsset } from "../../../../../remonline/remonline.utils.mjs";
+import { saveNewAsset } from "../../../../telegram.queries.mjs";
 
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
@@ -55,7 +56,12 @@ const getColor = async (ctx) => {
   return ctx.wizard.next();
 };
 const getYear = async (ctx) => {
-  ctx.session.contactData.newAssetDto.year = ctx.message.text;
+  const year = parseInt(ctx.message.text);
+  if (isNaN(year) || year < 1900 || year > new Date().getFullYear()) {
+    ctx.reply(ua.createAsset.wrongYear);
+    return;
+  }
+  ctx.session.contactData.newAssetDto.year = year;
   ctx.reply(ua.createAsset.askModel);
   return ctx.wizard.next();
 };
@@ -65,12 +71,22 @@ const getModel = async (ctx) => {
   return ctx.wizard.next();
 };
 const getMileage = async (ctx) => {
+  const mileage = parseInt(ctx.message.text);
+  if (isNaN(mileage) || mileage < 0 || mileage > 10_000_000) {
+    ctx.reply(ua.createAsset.wrongMileage);
+    return;
+  }
   ctx.session.contactData.newAssetDto.mileage = ctx.message.text;
   ctx.reply(ua.createAsset.askEngineVolume);
   return ctx.wizard.next();
 };
 const getEngineVolume = async (ctx) => {
-  ctx.session.contactData.newAssetDto.engineVolume = ctx.message.text;
+  const engineVolume = parseFloat(ctx.message.text);
+  if (isNaN(engineVolume) || engineVolume <= 0 || engineVolume > 50_000) {
+    ctx.reply(ua.createAsset.wrongEngineVolume);
+    return;
+  }
+  ctx.session.contactData.newAssetDto.engineVolume = engineVolume;
   ctx.reply(ua.createAsset.askMyTaxiCrmId);
   return ctx.wizard.next();
 };
@@ -78,7 +94,17 @@ const getMyTaxiCrmIdAndDataVerification = async (ctx) => {
   ctx.session.contactData.newAssetDto.myTaxiCrmId = ctx.message.text;
 
   //data verification
-  const {uid, brand, group:carGroup, color, year, model, mileage, engineVolume, myTaxiCrmId} = ctx.session.contactData.newAssetDto
+  const {
+    uid,
+    brand,
+    group: carGroup,
+    color,
+    year,
+    model,
+    mileage,
+    engineVolume,
+    myTaxiCrmId,
+  } = ctx.session.contactData.newAssetDto;
   let verificationText = `Перевірте деталі
     uid:${uid},
     group:${carGroup},
@@ -91,8 +117,51 @@ const getMyTaxiCrmIdAndDataVerification = async (ctx) => {
     myTaxiCrmId:${myTaxiCrmId}
 `;
 
-  ctx.reply(verificationText);
+  ctx.reply(verificationText, isDataCorrentBtm);
   return ctx.wizard.next();
+};
+const verificationSummary = async (ctx) => {
+  if (!ctx.update.callback_query) {
+    return;
+  }
+  const { data } = ctx.update.callback_query;
+  if (data === "wrong_order" || data !== "order_is_ok") {
+    await ctx.answerCbQuery("Помилкa. Повторіть спробу");
+    await ctx.reply(ua.createOrder.tryAgainToCompletApointment);
+    return ctx.scene.enter(process.env.NEW_ASSET_SCENE);
+  }
+  const {
+    uid,
+    brand,
+    group: carGroup,
+    color,
+    year,
+    model,
+    mileage,
+    engineVolume,
+    myTaxiCrmId,
+  } = ctx.session.contactData.newAssetDto;
+  const client_id = ctx.session.remonline_id;
+  const chosenAsset = {
+    uid,
+    brand,
+    carGroup,
+    color,
+    year,
+    model,
+    mileage,
+    engineVolume,
+    myTaxiCrmId,
+    client_id,
+  };
+  const { asset } = await createAsset(chosenAsset);
+  const { asset_id } = asset;
+  chosenAsset.asset_id = asset_id;
+  await saveNewAsset({ asset_id, client_id, asset_uid: uid });
+  delete ctx.session.contactData.newAssetDto;
+  ctx.session.contactData.chosenAsset = chosenAsset;
+  ctx.reply("leaving scene...");
+  return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 export const registerNewAssetStepSequence = [
   getLicensePlate,
@@ -105,4 +174,5 @@ export const registerNewAssetStepSequence = [
   getMileage,
   getEngineVolume,
   getMyTaxiCrmIdAndDataVerification,
+  verificationSummary,
 ];

@@ -1,19 +1,13 @@
 import { Markup } from "telegraf";
 
 import { createOrder } from "../../../../../remonline/remonline.utils.mjs";
-import { saveOrder,getBranchManager } from "../../../../../remonline/remonline.queries.mjs";
+import {
+  saveOrder,
+  getBranchManager,
+} from "../../../../../remonline/remonline.queries.mjs";
 import { mainKeyboard } from "../../../../middleware/keyboards.mjs";
-
+import { isDataCorrentBtm } from "../../../../middleware/keyboards.mjs";
 import { ua } from "../../../../../translate.mjs";
-
-const isDataCorrentBtm = (() => {
-  return Markup.inlineKeyboard([
-    [
-      Markup.button.callback("🟢 Так", "order_is_ok"),
-      Markup.button.callback("🔴 Ні", "wrong_order"),
-    ],
-  ]);
-})();
 
 const summarize = async (ctx) => {
   ctx.session.contactData.apointmenDate = new Date();
@@ -57,7 +51,7 @@ const check = async (ctx) => {
       apointmenDate,
       apointmenDateString,
     } = ctx.session.contactData;
-    const { uid: plateNumber,id:asset_id } = chosenAsset;
+    const { uid: plateNumber, asset_id } = chosenAsset;
     const scheduledFor = new Date(apointmenDate).getTime();
 
     let malfunction = malfunctionType;
