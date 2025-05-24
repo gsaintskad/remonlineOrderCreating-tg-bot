@@ -1,9 +1,0 @@
-import { Scenes } from "telegraf";
-import { chooseListedAssetSubscene } from "./subscenes/new-order/subscene.choose-listed-asset.mjs";
-import { registerNewAssetSubScene } from "./subscenes/new-order/subscene.new-asset.mjs";
-import { chooseAssetTypes } from "../../translate.mjs";
-const nextScene = [];
-export const selectAssetScene = new Scenes.WizardScene(
-  process.env.SELECT_ASSET_SCENE,
-  ...chooseListedAssetSubscene
-);

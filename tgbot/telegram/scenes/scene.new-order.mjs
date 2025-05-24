@@ -8,8 +8,8 @@ import {
   getBranchManager,
 } from "../../remonline/remonline.queries.mjs";
 import { generateUserAssetListKeyboard } from "../telegram.utilities.mjs";
-import { chooseListedAssetSubscene } from "./subscenes/new-order/subscene.choose-listed-asset.mjs";
-import { registerNewAssetSubScene } from "./subscenes/new-order/subscene.new-asset.mjs";
+import { chooseListedAssetSubscene } from "./subscenes/new-order/steps/subscene.choose-listed-asset.mjs";
+import { registerNewAssetSubScene } from "./subscenes/new-order/steps/subscene.new-asset.mjs";
 
 const isDataCorrentBtm = (() => {
   return Markup.inlineKeyboard([
@@ -44,8 +44,8 @@ const nextKeyborad = (() => {
 export const createOrderScene = new Scenes.WizardScene(
   process.env.CREATE_ORDER_SCENE,
   async (ctx) => {
-    ctx.wizard.state.contactData = {};
-    ctx.wizard.state.contactData.chosenAsset = {};
+    ctx.session.contactData = {};
+    ctx.session.contactData.chosenAsset = {};
     ctx.reply(ua.createOrder.chooseAssetSelectingMode, chooseAssetKeyboard);
     return ctx.wizard.next();
   },

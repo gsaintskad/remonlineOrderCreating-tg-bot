@@ -1,19 +1,19 @@
-import { chooseAssetTypes } from "../../../../translate.mjs";
-import { stayInSpecialNewOrderSubscene } from "../../../telegram.utilities.mjs";
-import { ua } from "../../../../translate.mjs";
-import { generateUserAssetListKeyboard } from "../../../telegram.utilities.mjs";
+import { chooseAssetTypes } from "../../../../../translate.mjs";
+import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
+import { ua } from "../../../../../translate.mjs";
+import { generateUserAssetListKeyboard } from "../../../../telegram.utilities.mjs";
 const stayInChooseListedAssetSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.listMyAssets,
 });
 
 const sendAssetKeyboard = async (ctx) => {
-  console.log('trying to send asset keyboard')
+  console.log("trying to send asset keyboard");
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
     ctx.session.chosenAssetSelectingMode
   );
-  if (navDecision && ctx.message.text !== "Далі") {
+  if (navDecision) {
     return navDecision;
   }
   const { remonline_id } = ctx.session;
@@ -29,9 +29,10 @@ const getRemonlineAsset = async (ctx) => {
   if (navDecision) {
     return navDecision;
   }
-  ctx.wizard.state.contactData.chosenAsset.licensePlate = ctx.message.text;
-  console.log(ctx.wizard.state.contactData.chosenAsset);
-  return ctx.wizard.next();
+  ctx.session.contactData.chosenAsset.licensePlate = ctx.message.text;
+  console.log(ctx.session.contactData.chosenAsset);
+  ctx.reply("leaving scene...");
+  return ctx.scene.leave();
 };
 
 export const chooseListedAssetSubscene = [sendAssetKeyboard, getRemonlineAsset];

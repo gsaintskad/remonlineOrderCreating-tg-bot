@@ -1,15 +1,14 @@
 import { Markup } from "telegraf";
-import { chooseAssetTypes } from "../../../../translate.mjs";
-import { stayInSpecialNewOrderSubscene } from "../../../telegram.utilities.mjs";
-import { ua } from "../../../../translate.mjs";
+import { chooseAssetTypes } from "../../../../../translate.mjs";
+import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
+import { ua } from "../../../../../translate.mjs";
 
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.registerNewAsset,
 });
 const getLicensePlate = async (ctx) => {
-
-  console.log('trying to create new asset')
+  console.log("trying to create new asset");
   const navDecision = stayInNewAssetRegitraionSubscene(
     ctx,
     ctx.session.chosenAssetSelectingMode

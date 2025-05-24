@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import { createOrderScene } from "./telegram/scenes/scene.new-order.mjs";
-import { selectAssetScene } from "./telegram/scenes/scene.choose-asset.mjs";
+import { selectAssetScene } from "./telegram/scenes/subscenes/new-order/scene.choose-asset.mjs";
 import { createRemonlineId } from "./telegram/scenes/scene.new-remonline-id.mjs";
 import { editUserScene } from "./telegram/scenes/scene.user-edit-scene.mjs";
 import { dbLogger } from "./telegram/middleware/db-logger.mjs";
@@ -23,7 +23,7 @@ import {
   verifyTelegramWebAppData,
 } from "./telegram/telegram.utilities.mjs";
 import { getRemonlineIdByTelegramId } from "./telegram/telegram.queries.mjs";
-import { newAssetScene } from "./telegram/scenes/scene.new-asset.mjs";
+import { newAssetScene } from "./telegram/scenes/subscenes/new-order/scene.new-asset.mjs";
 
 // Load environment variables
 dotenv.config();
@@ -45,7 +45,7 @@ const stage = new Scenes.Stage([
   editUserScene,
   getOrdersScene,
   selectAssetScene,
-  newAssetScene
+  newAssetScene,
 ]);
 const app = express();
 app.use(cors());
