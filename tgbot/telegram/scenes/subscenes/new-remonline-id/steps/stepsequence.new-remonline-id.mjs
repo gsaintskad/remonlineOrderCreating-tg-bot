@@ -53,8 +53,10 @@ const sentCityKeyboard = async (ctx) => {
   const branchList = branchListObj.map((b) => {
     return [b.public_name];
   });
-  const otherCity = branchList[0];
-  branchList.shift();
+  const otherCity = 'Інше місто';
+  const otherCityId = branchList.indexOf(otherCity);
+  branchList.splice(otherCityId, 1);
+
   ctx.reply(
     ua.createRemonlineId.askCity,
     listKeyboard([...branchList, otherCity])
