@@ -1,6 +1,6 @@
-import { ua } from "../../translate.mjs";
-import { mainKeyboard } from "./keyboards.mjs";
-import { resetRemonlineId } from "../telegram.queries.mjs";
+import { ua } from '../../translate.mjs';
+import { mainKeyboard } from './keyboards.mjs';
+import { resetRemonlineId } from '../telegram.queries.mjs';
 
 export async function onStart(ctx, next) {
   if (ctx.session.remonline_id) {

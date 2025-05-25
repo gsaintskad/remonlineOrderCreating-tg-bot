@@ -1,16 +1,16 @@
-import fetch from "node-fetch";
-import { saveRemonlineToken, getRemonlineToken } from "./remonline.queries.mjs";
+import fetch from 'node-fetch';
+import { saveRemonlineToken, getRemonlineToken } from './remonline.queries.mjs';
 
 async function _getNewToken() {
   const tokenLifetime = parseInt(process.env.REMONLINE_TOKEN_LIFETIME);
   const validTo = new Date().getTime() + tokenLifetime;
 
   const params = new URLSearchParams();
-  params.append("api_key", process.env.REMONLINE_API_KEY);
+  params.append('api_key', process.env.REMONLINE_API_KEY);
 
   const response = await fetch(`${process.env.REMONLINE_API}/token/new`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params,
   });
 
