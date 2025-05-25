@@ -111,9 +111,10 @@ bot.use(stage.middleware());
         });
 
         // Используем telegramUserId как client_id для RemOnline
-        const { orders } = await getOrders({
-          client_id: remonline_id,
-        });
+        const params = {
+          remonline_id,
+        };
+        const orders = await getOrders({ params });
 
         res.status(200).json({
           success: true,

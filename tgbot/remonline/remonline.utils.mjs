@@ -198,12 +198,16 @@ export async function createClient({
 
   return { clientId: data.data.id };
 }
-export async function getOrders(
-  { idLabels, ids, modified_at, sort_dir, client_id },
-  _page = 1,
-  _orders = []
-) {
-  const url = `${process.env.REMONLINE_API}/order/?clients_ids=${client_id}`;
+export async function getOrders({ params }) {
+  let query_params = `?`;
+  if (!params || Object.keys(params).length == 0) {
+    console.error(`requieres params`);
+  }
+  if (params?.remonline_id) {
+    query_params += `clients_ids=${params.remonline_id}`;
+  }
+
+  const url = `${process.env.REMONLINE_API}/orders${query_params}`;
   const options = {
     method: "GET",
     headers: {
@@ -211,66 +215,34 @@ export async function getOrders(
       authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
     },
   };
-  console.log({ url, options });
+
+  console.log(`requesting url:${url}`,options);
+
   const response = await fetch(url, options);
-
-  if (
-    response.status == 414 ||
-    response.status == 503 ||
-    response.status == 502 ||
-    response.status == 504
-  ) {
-    throw await response.text();
-  }
-
-  if (process.env.LOG == "LOG") {
-    console.log(await response.text());
-  }
-
   const data = await response.json();
   const { success } = data;
-  if (!success) {
+  if (!success&& response.status!==200) {
     const { message, code } = data;
-    const { validation } = message;
+    // const { validation } = message;
 
-    if ((response.status == 403 && code == 101) || response.status == 401) {
+    if (
+      (response.status == 403 && code == 101) ||
+      (response.status == 401 && code == 401)
+    ) {
       console.info({ function: "getOrders", message: "Get new Auth" });
       await remonlineTokenToEnv(true);
-      return await getOrders(
-        { idLabels, ids, modified_at, sort_dir, client_id },
-        _page,
-        _orders
-      );
+      return await getOrders({ params });
     }
 
     console.error({
       function: "getOrders",
       message,
-      validation,
+      // validation,
       status: response.status,
     });
     return;
   }
-
-  const { data: orders, count, page } = data;
-
-  const doneOnPrevPage = (page - 1) * 50;
-
-  const leftToFinish = count - doneOnPrevPage - orders.length;
-
-  _orders.push(...orders);
-
-  console.log({ count, page, doneOnPrevPage, leftToFinish });
-
-  if (leftToFinish > 0) {
-    return await getOrders(
-      { idLabels, ids, modified_at, sort_dir, client_id },
-      parseInt(page) + 1,
-      _orders
-    );
-  }
-
-  return { orders: _orders, count };
+  return data;
 }
 export async function editClient({ id, branchPublicName }) {
   const params = new URLSearchParams();

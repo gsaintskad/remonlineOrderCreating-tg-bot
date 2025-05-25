@@ -32,7 +32,8 @@ export const getHandledOrders = async (): Promise<{
     body: tg.initData,
   });
 
-  const serviceOrders: ServiceOrder[] = await response.json();
+  const { orders: serviceResp } = await response.json();
+  const { data: serviceOrders } = serviceResp;
 
   const clientsSet = new Set<string>();
   const orders: HandledOrder[] = [];
