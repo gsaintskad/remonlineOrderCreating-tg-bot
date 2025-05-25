@@ -10,6 +10,7 @@ import {
   onReset,
   onEdit,
   onGetOrders,
+  onNewClient,
 } from './telegram/middleware/start-handler.mjs';
 import { keyboardText } from './translate.mjs';
 import { remonlineTokenToEnv } from './remonline/remonline.api.mjs';
@@ -45,6 +46,7 @@ bot.use(stage.middleware());
   bot.use(dbLogger);
   bot.start(onStart);
   bot.command('edit', onEdit);
+  bot.command('newClient', onNewClient);
   bot.command('getOrders', onGetOrders);
 
   bot.hears(keyboardText.newAppointment, (ctx) => {

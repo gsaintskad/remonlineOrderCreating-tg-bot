@@ -55,7 +55,7 @@ export const createRemonlineId = new Scenes.WizardScene(
     });
     const otherCity = branchList[0];
     branchList.shift();
-
+    console.log(ctx.message.contact);
     ctx.reply(
       ua.createRemonlineId.askCity,
       listKeyboard([...branchList, otherCity])
@@ -82,17 +82,143 @@ export const createRemonlineId = new Scenes.WizardScene(
     }
 
     ctx.reply(ua.createRemonlineId.askFullName, Markup.removeKeyboard());
-    return ctx.wizard.selectStep(3);
+    
+    return ctx.wizard.next();
   },
-  (ctx) => {
+  async (ctx) => {
     if (ctx.message?.text?.length < 3) {
-      ctx.reply(ua.createRemonlineId.cityToShort);
+      await ctx.reply(ua.createRemonlineId.cityToShort);
       return;
     }
 
     ctx.wizard.state.userData.branch_public_name += `: ${ctx.message.text}`;
-    ctx.reply(ua.createRemonlineId.askFullName, Markup.removeKeyboard());
+    await ctx.reply(
+      ua.createRemonlineId.askContactPhone,
+      Markup.keyboard([
+        Markup.button.contactRequest(
+          ua.createRemonlineId.sharePhoneNumberButtonText
+        ),
+      ])
+        .resize()
+        .oneTime() // oneTime() makes the keyboard disappear after a button is pressed
+    );
     return ctx.wizard.next();
+  },
+  async (ctx) => {
+    // <<< MODIFIED >>>
+    await ctx.reply('handling contact request');
+    console.log({ contact: ctx.message.contact });
+    let phoneNumberString;
+    let sharedViaButton = false;
+
+    if (ctx.message?.contact) {
+      // User shared contact via button
+      phoneNumberString = ctx.message.contact.phone_number;
+      // Add user's first/last name from contact if not already set by manual input,
+      // but prioritize manually entered full name.
+      if (
+        !ctx.wizard.state.userData.fullName &&
+        ctx.message.contact.first_name
+      ) {
+        ctx.wizard.state.userData.fullName = ctx.message.contact.first_name;
+        if (ctx.message.contact.last_name) {
+          ctx.wizard.state.userData.fullName += ` ${ctx.message.contact.last_name}`;
+        }
+      }
+      sharedViaButton = true;
+      // Optionally, send a quick confirmation and remove keyboard
+      // await ctx.reply(ua.createRemonlineId.thankYouForSharingPhone, Markup.removeKeyboard());
+    } else if (ctx.message?.text) {
+      // User typed the phone number
+      phoneNumberString = ctx.message.text;
+    } else {
+      // Neither contact nor text message received
+      ctx.reply(
+        ua.createRemonlineId.askCorrectPhone,
+        Markup.keyboard([
+          // Re-prompt with the button
+          Markup.button.contactRequest(
+            ua.createRemonlineId.sharePhoneNumberButtonText
+          ),
+        ])
+          .resize()
+          .oneTime()
+      );
+      return;
+    }
+
+    const phoneNumber = parsePhoneNumber(phoneNumberString, 'UA');
+
+    // if (!phoneNumber || !phoneNumber.isValid()) {
+    //   // Added !phoneNumber for safety
+    //   ctx.reply(
+    //     ua.createRemonlineId.askCorrectPhone,
+    //     Markup.keyboard([
+    //       // Re-prompt with the button on invalid input
+    //       Markup.button.contactRequest(
+    //         ua.createRemonlineId.sharePhoneNumberButtonText
+    //       ),
+    //     ])
+    //       .resize()
+    //       .oneTime()
+    //   );
+    //   return;
+    // }
+
+    // // If phone is valid, ensure reply keyboard is removed before next prompt
+    // (especially if the next prompt uses an inline keyboard or no keyboard)
+    if (sharedViaButton) {
+      await ctx.reply(
+        ua.createRemonlineId.thankYouForSharingPhone,
+        Markup.removeKeyboard()
+      );
+      await ctx.reply(JSON.stringify(ctx.message.contact));
+    } else {
+      // If typed, and we are certain the oneTime keyboard might still be an issue
+      // or if no specific confirmation message for typed numbers,
+      // we could just ensure it's removed before the *next* prompt
+      // For now, assume oneTime() and subsequent replies handle it.
+      // If issues persist, an explicit Markup.removeKeyboard() can be sent here.
+    }
+
+    const { nationalNumber, number } = phoneNumber;
+    ctx.wizard.state.userData.nationalNumber = nationalNumber;
+    ctx.wizard.state.userData.number = number;
+
+    const { clientsList, count } = await getClientsByPhone({ nationalNumber });
+
+    if (count != 0) {
+      const [client] = clientsList;
+      const { name, email, id } = client;
+
+      // If user shared contact, their Telegram name might be different from RemOnline name.
+      // We prioritize RemOnline name but store what they provided in 'note' if different.
+      if (ctx.wizard.state.userData.fullName !== name) {
+        ctx.wizard.state.userData.note = `Telegram name: ${ctx.wizard.state.userData.fullName}`;
+      }
+      ctx.wizard.state.userData.fullName = name; // Use RemOnline name
+      ctx.wizard.state.userData.email = email;
+      ctx.wizard.state.userData.remonline_id = id;
+
+      await ctx.reply(
+        ua.createRemonlineId.areYouExistingClient,
+        Markup.removeKeyboard()
+      ); // <<< Ensure keyboard removed
+      await ctx.reply(
+        userInfoAppruvalText(ctx.wizard.state.userData),
+        isDataCorrentBtm
+      );
+      return ctx.wizard.selectStep(6); // Jump to approval step (index 6)
+    }
+
+    // New client, ask for email. Ensure reply keyboard is gone.
+    await ctx.reply(ua.createRemonlineId.askMail, {
+      ...(noEmailInlineBtm.reply_markup
+        ? noEmailInlineBtm
+        : { reply_markup: noEmailInlineBtm }),
+      ...Markup.removeKeyboard(),
+    }); // <<< MODIFIED to ensure reply keyboard removal
+    return ctx.wizard.next(); // Proceeds to step 5 (index 5)
   },
   (ctx) => {
     if (ctx.message?.text?.length < 3) {
