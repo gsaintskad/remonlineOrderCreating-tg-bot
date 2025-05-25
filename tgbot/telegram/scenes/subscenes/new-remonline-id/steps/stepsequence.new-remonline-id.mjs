@@ -55,7 +55,6 @@ const sentCityKeyboard = async (ctx) => {
   });
   const otherCity = branchList[0];
   branchList.shift();
-  console.log(ctx.message.contact);
   ctx.reply(
     ua.createRemonlineId.askCity,
     listKeyboard([...branchList, otherCity])
@@ -191,8 +190,6 @@ const handleContact = async (ctx) => {
     const [client] = clientsList;
     const { name, email, id } = client;
 
-    // If user shared contact, their Telegram name might be different from RemOnline name.
-    // We prioritize RemOnline name but store what they provided in 'note' if different.
     if (ctx.wizard.state.userData.fullName !== name) {
       ctx.wizard.state.userData.note = `Telegram name: ${ctx.wizard.state.userData.fullName}`;
     }
@@ -203,22 +200,20 @@ const handleContact = async (ctx) => {
     await ctx.reply(
       ua.createRemonlineId.areYouExistingClient,
       Markup.removeKeyboard()
-    ); // <<< Ensure keyboard removed
+    );
     await ctx.reply(
       userInfoAppruvalText(ctx.wizard.state.userData),
       isDataCorrentBtm
     );
-    return ctx.wizard.selectStep(6); // Jump to approval step (index 6)
+    return ctx.wizard.selectStep(6);
   }
-
-  // New client, ask for email. Ensure reply keyboard is gone.
   await ctx.reply(ua.createRemonlineId.askMail, {
     ...(noEmailInlineBtm.reply_markup
       ? noEmailInlineBtm
       : { reply_markup: noEmailInlineBtm }),
     ...Markup.removeKeyboard(),
-  }); // <<< MODIFIED to ensure reply keyboard removal
-  return ctx.wizard.next(); // Proceeds to step 5 (index 5)
+  });
+  return ctx.wizard.next();
 };
 const failedVerificationHandler = async (ctx) => {
   if (ctx.update?.callback_query?.data === 'without_mail') {
@@ -277,7 +272,6 @@ const successfullVerificationHandler = async (ctx) => {
         telegramId: from.id,
         branchPublicName: branch_public_name,
       });
-      console.log(`\n\n\n\n\n${JSON.stringify(a)}\n\n\n\n`);
       const { clientId } = a;
       ctx.session.remonline_id = clientId;
     }

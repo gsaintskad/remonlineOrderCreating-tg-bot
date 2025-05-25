@@ -7,7 +7,6 @@ import { turnBackKeyboard } from './middleware/keyboards.mjs';
 import { getAssetDataByClientId } from './telegram.queries.mjs';
 import { getUnpackedSettings } from 'http2';
 
-
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);
   const receivedHash = params.get('hash');
@@ -75,13 +74,13 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
   };
   const { data: assets } = await getAsset({ params });
   const db_assets = await getAssetDataByClientId({ clientId: remonline_id });
-  console.log({db_assets})
+  console.log({ db_assets });
   if (assets.length === 0 && db_assets.length === 0) {
     return { code: 404, keyboard: turnBackKeyboard };
   }
   const asset_candidates = [assets, db_assets];
   const uids = [];
-  console.log({asset_candidates})
+  console.log({ asset_candidates });
   asset_candidates.forEach((asset_candidate) => {
     asset_candidate.forEach((asset) => {
       if (uids.includes(asset.uid)) {
@@ -90,10 +89,10 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
       uids.push(asset.uid);
     });
   });
-  console.log({uids})
+  console.log({ uids });
   const chooseAssetKeyboard = (() => {
     const buttons = uids.map((uid) => [uid]);
-    console.log({buttons})
+    console.log({ buttons });
     return {
       code: 200,
       keyboard: Markup.keyboard(buttons).oneTime(true).resize(true),

@@ -10,7 +10,7 @@ import {
 } from '../../../../../remonline/remonline.utils.mjs';
 import { saveNewAsset } from '../../../../telegram.queries.mjs';
 import { transliterateCyrillicToLatinString } from '../../../../../utils/utils.mjs';
--
+
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.registerNewAsset,
@@ -165,13 +165,11 @@ const verificationSummary = async (ctx) => {
   try {
     asset = (await createAsset(chosenAsset)).asset;
   } catch (e) {
-    console.error(e);
     const params = {
       licensePlate: uid,
     };
     const { data } = await getAsset({ params });
     const [as] = data;
-    console.log('got duplicate', as);
     asset = { ...as, asset_id: as.id };
   }
   const { asset_id } = asset;
@@ -179,7 +177,6 @@ const verificationSummary = async (ctx) => {
   await saveNewAsset({ asset_id, client_id, asset_uid: uid });
   delete ctx.session.contactData.newAssetDto;
   ctx.session.contactData.chosenAsset = chosenAsset;
-  ctx.reply('leaving scene...');
   return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 export const registerNewAssetStepSequence = [
