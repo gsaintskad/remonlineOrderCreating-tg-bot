@@ -112,16 +112,19 @@ const getMyTaxiCrmIdAndDataVerification = async (ctx) => {
     engineVolume,
     myTaxiCrmId,
   } = ctx.session.contactData.newAssetDto;
-  let verificationText = `Перевірте деталі
-    uid:${uid},
-    group:${carGroup},
-    brand:${brand},
-    color:${color},
-    year:${year},
-    model:${model},
-    Пробіг:${mileage},
-    Об'єм двигуна (куб.см):${engineVolume},
-    myTaxiCrmId:${myTaxiCrmId}
+  let verificationText = `Перевірте деталі:
+
+🆔 Номер авто:${uid},
+👥 Група:${carGroup},
+🎬 Бренд:${brand},
+🎨 Колір:${color},
+⚙️ Рік продукції:${year},
+🚘 Модель:${model},
+💨 Пробіг (км):${mileage},
+⚙️ Об'єм двигуна (куб.см):${engineVolume},
+🆔 myTaxiCrmId:${myTaxiCrmId}
+
+Чи все правильно 🧐?
 `;
 
   ctx.reply(verificationText, isDataCorrentBtm);
