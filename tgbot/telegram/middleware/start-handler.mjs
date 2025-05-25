@@ -43,3 +43,7 @@ export async function onEdit(ctx, next) {
   ctx.scene.enter(process.env.USER_EDIT_SCENE);
   await next();
 }
+export async function onNewClient(ctx, next) {
+  ctx.scene.enter(process.env.CREATE_REMONLINE_ID);
+  await next();
+}
