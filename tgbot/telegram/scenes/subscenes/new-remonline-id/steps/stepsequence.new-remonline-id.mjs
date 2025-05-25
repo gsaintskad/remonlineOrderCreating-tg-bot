@@ -75,7 +75,7 @@ const handleCityKeyboardResponse = async (ctx) => {
   ctx.wizard.state.userData.branch_id = branch_id;
   ctx.wizard.state.userData.branch_public_name = public_name;
 
-  if (public_name == 'Інше Місто') {
+  if (public_name === 'Інше місто') {
     ctx.reply(ua.createRemonlineId.pickOwnCity, Markup.removeKeyboard());
     return ctx.wizard.next();
   }
