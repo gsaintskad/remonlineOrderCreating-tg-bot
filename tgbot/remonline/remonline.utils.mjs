@@ -356,14 +356,14 @@ export async function createAsset({
       await remonlineTokenToEnv(true);
       return await createAsset({ uid });
     }
-
-    console.error({
+    const details = {
       function: 'createAsset',
       message,
       validation,
       status: response.status,
-    });
-    return;
+    };
+    console.error(details);
+    throw new Error('duplicate serial numbers ', details);
   }
   return { asset: data };
 }

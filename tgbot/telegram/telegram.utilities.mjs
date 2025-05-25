@@ -3,6 +3,8 @@ import { URLSearchParams } from 'url';
 import { Markup } from 'telegraf';
 import { getAsset } from '../remonline/remonline.utils.mjs';
 import { turnBackKeyboard } from './middleware/keyboards.mjs';
+import { getAssetDataByClientId } from './telegram.queries.mjs';
+import { getUnpackedSettings } from 'http2';
 
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);
@@ -70,13 +72,26 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
     remonline_id,
   };
   const { data: assets } = await getAsset({ params });
-  if (assets.length === 0) {
+  const db_assets = await getAssetDataByClientId({ clientId: remonline_id });
+  console.log({db_assets})
+  if (assets.length === 0 && db_assets.length === 0) {
     return { code: 404, keyboard: turnBackKeyboard };
   }
-  const chooseAssetKeyboard = (() => {
-    const buttons = assets.map((asset) => {
-      return [asset.uid];
+  const asset_candidates = [assets, db_assets];
+  const uids = [];
+  console.log({asset_candidates})
+  asset_candidates.forEach((asset_candidate) => {
+    asset_candidate.forEach((asset) => {
+      if (uids.includes(asset.uid)) {
+        return;
+      }
+      uids.push(asset.uid);
     });
+  });
+  console.log({uids})
+  const chooseAssetKeyboard = (() => {
+    const buttons = uids.map((uid) => [uid]);
+    console.log({buttons})
     return {
       code: 200,
       keyboard: Markup.keyboard(buttons).oneTime(true).resize(true),

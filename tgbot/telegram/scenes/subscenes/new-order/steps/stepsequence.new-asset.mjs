@@ -3,8 +3,12 @@ import { chooseAssetTypes } from '../../../../../translate.mjs';
 import { stayInSpecialNewOrderSubscene } from '../../../../telegram.utilities.mjs';
 import { ua } from '../../../../../translate.mjs';
 import { isDataCorrentBtm } from '../../../../middleware/keyboards.mjs';
-import { createAsset } from '../../../../../remonline/remonline.utils.mjs';
+import {
+  createAsset,
+  getAsset,
+} from '../../../../../remonline/remonline.utils.mjs';
 import { saveNewAsset } from '../../../../telegram.queries.mjs';
+import { transliterateCyrillicToLatinString } from '../../../../../utils/utils.mjs';
 
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
@@ -35,7 +39,9 @@ const verifyNumber = async (ctx) => {
     ctx.reply(ua.createAsset.wrongPlateNumber);
     return;
   }
-  ctx.session.contactData.newAssetDto.uid = ctx.message.text;
+  const licensePlate = transliterateCyrillicToLatinString(ctx.message.text);
+
+  ctx.session.contactData.newAssetDto.uid = licensePlate;
   ctx.reply(ua.createAsset.askBrand, Markup.removeKeyboard());
   return ctx.wizard.next();
 };
@@ -154,7 +160,19 @@ const verificationSummary = async (ctx) => {
     myTaxiCrmId,
     client_id,
   };
-  const { asset } = await createAsset(chosenAsset);
+  let asset;
+  try {
+    asset = (await createAsset(chosenAsset)).asset;
+  } catch (e) {
+    console.error(e);
+    const params = {
+      licensePlate: uid,
+    };
+    const { data } = await getAsset({ params });
+    const [as] = data;
+    console.log('got duplicate', as);
+    asset = { ...as, asset_id: as.id };
+  }
   const { asset_id } = asset;
   chosenAsset.asset_id = asset_id;
   await saveNewAsset({ asset_id, client_id, asset_uid: uid });

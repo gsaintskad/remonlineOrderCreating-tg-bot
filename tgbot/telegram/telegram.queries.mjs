@@ -47,6 +47,6 @@ export async function saveNewAsset({ client_id, asset_id, asset_uid }) {
   await db.run(sql, client_id, asset_id, asset_uid);
 }
 export async function getAssetDataByClientId({ clientId }) {
-  const sql = `SELECT asset_id, asset_uid FROM clients_to_assets WHERE client_id = ?`;
+  const sql = `SELECT asset_id, asset_uid as uid FROM clients_to_assets WHERE client_id = ?`;
   return await db.all(sql, clientId);
 }
