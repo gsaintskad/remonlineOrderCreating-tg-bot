@@ -1,6 +1,6 @@
 # remonlineOrderCreator
-Create new client and order in remOnline with telegram bot
 
+Create new client and order in remOnline with telegram bot
 
 Getting Started:
 
@@ -24,7 +24,7 @@ add main branch with
 
 `node node_modules/db-migrate/bin/db-migrate up`
 
-5. Install PM2 
+5. Install PM2
 
 `sudo npm install pm2@latest -g`
 
@@ -39,7 +39,6 @@ add main branch with
 8. Make PM2 starts on boot
 
 `pm2 startup`
-
 
 Session details:
 

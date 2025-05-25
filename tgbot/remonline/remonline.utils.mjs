@@ -4,10 +4,10 @@ import { message } from "telegraf/filters";
 
 async function getOrderLable(orderId) {
   console.log(
-    `await fetch(\`${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}\`);`
+    `await fetch(\`${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}\`);`,
   );
   const response = await fetch(
-    `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`
+    `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`,
   );
   const data = await response.json();
   // console.log("lable data resp:", data);
@@ -121,7 +121,7 @@ export async function createOrder({
 
 export async function getClientsByPhone({ nationalNumber }) {
   const response = await fetch(
-    `${process.env.REMONLINE_API}/clients/?token=${process.env.REMONLINE_API_TOKEN}&phones[]=${nationalNumber}`
+    `${process.env.REMONLINE_API}/clients/?token=${process.env.REMONLINE_API_TOKEN}&phones[]=${nationalNumber}`,
   );
 
   const data = await response.json();
@@ -216,12 +216,12 @@ export async function getOrders({ params }) {
     },
   };
 
-  console.log(`requesting url:${url}`,options);
+  console.log(`requesting url:${url}`, options);
 
   const response = await fetch(url, options);
   const data = await response.json();
   const { success } = data;
-  if (!success&& response.status!==200) {
+  if (!success && response.status !== 200) {
     const { message, code } = data;
     // const { validation } = message;
 
@@ -252,7 +252,7 @@ export async function editClient({ id, branchPublicName }) {
     "custom_fields",
     JSON.stringify({
       6879276: branchPublicName,
-    })
+    }),
   );
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {

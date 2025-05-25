@@ -3,5 +3,5 @@ import { selectListedAssetStepSequence } from "./steps/stepsequence.select-liste
 
 export const selectAssetSubscene = new Scenes.WizardScene(
   process.env.SELECT_ASSET_SCENE,
-  ...selectListedAssetStepSequence
+  ...selectListedAssetStepSequence,
 );

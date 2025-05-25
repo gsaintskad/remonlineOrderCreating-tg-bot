@@ -3,5 +3,5 @@ import { selectMalfunctionStepSequence } from "./steps/stepsequence.select-malfu
 
 export const selectMalfunctionSubscene = new Scenes.WizardScene(
   process.env.SELECT_MALFUNCTION_SCENE,
-  ...selectMalfunctionStepSequence
+  ...selectMalfunctionStepSequence,
 );

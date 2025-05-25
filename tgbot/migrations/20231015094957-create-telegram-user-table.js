@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
 var dbm;
 var type;
 var seed;
 
 /**
-  * We receive the dbmigrate dependency from dbmigrate initially.
-  * This enables us to not have to rely on NODE_PATH.
-  */
+ * We receive the dbmigrate dependency from dbmigrate initially.
+ * This enables us to not have to rely on NODE_PATH.
+ */
 exports.setup = function (options, seedLink) {
   dbm = options.dbmigrate;
   type = dbm.dataType;
@@ -22,22 +22,22 @@ exports.up = function (db, callback) {
     first_name STRING,
     last_name STRING,
     username STRING
-    );`
-  
+    );`;
+
   db.runSql(data, function (err) {
     if (err) return console.log(err);
-    callback()
+    callback();
   });
 };
 
 exports.down = function (db, callback) {
-  const data = `DROP TABLE telegram_users`
+  const data = `DROP TABLE telegram_users`;
   db.runSql(data, function (err) {
     if (err) return console.log(err);
-    callback()
+    callback();
   });
 };
 
 exports._meta = {
-  "version": 1
+  version: 1,
 };

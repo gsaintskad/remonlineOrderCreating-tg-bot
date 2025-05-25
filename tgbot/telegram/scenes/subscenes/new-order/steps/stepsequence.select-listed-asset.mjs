@@ -15,7 +15,7 @@ const sendAssetKeyboard = async (ctx) => {
   console.log("trying to send asset keyboard");
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode
+    ctx.session.chosenAssetSelectingMode,
   );
   if (navDecision) {
     return navDecision;
@@ -27,7 +27,7 @@ const sendAssetKeyboard = async (ctx) => {
 
   ctx.reply(
     code === 404 ? "Не знайдено ваших авто" : ua.createOrder.chooseAsset,
-    keyboard
+    keyboard,
   );
   return ctx.wizard.next();
 };
@@ -37,7 +37,7 @@ const getRemonlineAsset = async (ctx) => {
   }
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode
+    ctx.session.chosenAssetSelectingMode,
   );
   if (navDecision) {
     return navDecision;
@@ -47,9 +47,9 @@ const getRemonlineAsset = async (ctx) => {
   const {
     data: [asset],
   } = await getAsset({ params: { licensePlate } });
-  const chosenAsset={...asset,asset_id:asset.id}
+  const chosenAsset = { ...asset, asset_id: asset.id };
   ctx.session.contactData.chosenAsset = chosenAsset;
-  
+
   return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 

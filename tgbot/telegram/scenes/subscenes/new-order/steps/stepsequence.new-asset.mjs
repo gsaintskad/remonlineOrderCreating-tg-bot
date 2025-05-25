@@ -26,7 +26,7 @@ const getLicensePlate = async (ctx) => {
 const verifyNumber = async (ctx) => {
   const navDecision = stayInNewAssetRegitraionSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode
+    ctx.session.chosenAssetSelectingMode,
   );
   if (navDecision) {
     return navDecision;

@@ -9,7 +9,7 @@ const db = await open({
 export async function isUserSaved({ id }) {
   return await db.get(
     `SELECT telegram_id,remonline_id,first_name,branch_id,branch_public_name FROM telegram_users WHERE telegram_id = ? LIMIT 1`,
-    id
+    id,
   );
 }
 
@@ -34,7 +34,7 @@ export async function resetRemonlineId({ telegramId }) {
 }
 export async function getRemonlineIdByTelegramId({ telegramId }) {
   const sql = `SELECT remonline_id from telegram_users WHERE telegram_id= ?`;
-  const resp = await db.get(sql,  telegramId);
+  const resp = await db.get(sql, telegramId);
   // console.log({resp})
   return resp;
 }
@@ -42,12 +42,11 @@ export async function getBranchList() {
   return await db.all(`SELECT id,public_name FROM branches ORDER BY id asc`);
 }
 
-export async function saveNewAsset({ client_id, asset_id,asset_uid }) {
+export async function saveNewAsset({ client_id, asset_id, asset_uid }) {
   const sql = `INSERT INTO clients_to_assets (client_id, asset_id, asset_uid) VALUES(?,?,?)`;
-  await db.run(sql, client_id, asset_id,asset_uid);
+  await db.run(sql, client_id, asset_id, asset_uid);
 }
 export async function getAssetDataByClientId({ clientId }) {
-  const sql=`SELECT asset_id, asset_uid FROM clients_to_assets WHERE client_id = ?`;
+  const sql = `SELECT asset_id, asset_uid FROM clients_to_assets WHERE client_id = ?`;
   return await db.all(sql, clientId);
-   
 }

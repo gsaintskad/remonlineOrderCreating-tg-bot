@@ -11,7 +11,6 @@ import { generateUserAssetListKeyboard } from "../telegram.utilities.mjs";
 import { selectListedAssetStepSequence } from "./subscenes/new-order/steps/stepsequence.select-listed-asset.mjs";
 import { registerNewAssetStepSequence } from "./subscenes/new-order/steps/stepsequence.new-asset.mjs";
 
-
 const chooseAssetKeyboard = (() => {
   const buttons = [
     [chooseAssetTypes.listMyAssets],
@@ -48,7 +47,6 @@ export const createOrderScene = new Scenes.WizardScene(
 
     return;
   },
-  
 );
 
 createOrderScene.command("start", leaveSceneOnCommand);
