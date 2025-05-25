@@ -56,7 +56,6 @@ const sentCityKeyboard = async (ctx) => {
   const otherCity = 'Інше місто';
   const otherCityId = branchList.indexOf(otherCity);
   branchList.splice(otherCityId, otherCityId + 1);
-  branchList.push([otherCity]);
   ctx.reply(ua.createRemonlineId.askCity, listKeyboard([...branchList]));
   return ctx.wizard.next();
 };
