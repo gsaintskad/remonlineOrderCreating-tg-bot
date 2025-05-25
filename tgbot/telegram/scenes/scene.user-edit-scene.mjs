@@ -1,10 +1,10 @@
-import { Scenes, Markup } from "telegraf";
-import { ua } from "../../translate.mjs";
-import { editClient } from "../../remonline/remonline.utils.mjs";
-import { saveRemonlineId, getBranchList } from "../telegram.queries.mjs";
-import { leaveSceneOnCommand } from "../middleware/start-handler.mjs";
+import { Scenes, Markup } from 'telegraf';
+import { ua } from '../../translate.mjs';
+import { editClient } from '../../remonline/remonline.utils.mjs';
+import { saveRemonlineId, getBranchList } from '../telegram.queries.mjs';
+import { leaveSceneOnCommand } from '../middleware/start-handler.mjs';
 
-import { listKeyboard } from "../middleware/keyboards.mjs";
+import { listKeyboard } from '../middleware/keyboards.mjs';
 
 const branchListObj = await getBranchList();
 
@@ -35,7 +35,7 @@ export const editUserScene = new Scenes.WizardScene(
     ctx.wizard.state.userData.branch_id = branch_id;
     ctx.wizard.state.userData.branch_public_name = public_name;
 
-    if (public_name == "Інше Місто") {
+    if (public_name == 'Інше Місто') {
       ctx.reply(ua.createRemonlineId.pickOwnCity, Markup.removeKeyboard());
       return ctx.wizard.next();
     }
@@ -44,7 +44,7 @@ export const editUserScene = new Scenes.WizardScene(
     return ctx.wizard.steps[ctx.wizard.cursor](ctx);
   },
   async (ctx) => {
-    if (ctx.wizard.state.userData.branch_public_name === "Інше Місто") {
+    if (ctx.wizard.state.userData.branch_public_name === 'Інше Місто') {
       if (ctx.message?.text?.length < 3) {
         ctx.reply(ua.createRemonlineId.cityToShort);
         return;
@@ -76,7 +76,7 @@ export const editUserScene = new Scenes.WizardScene(
     ctx.scene.leave();
     ctx.reply(ua.editDone, Markup.removeKeyboard());
     return;
-  },
+  }
 );
 
-editUserScene.command("start", leaveSceneOnCommand);
+editUserScene.command('start', leaveSceneOnCommand);

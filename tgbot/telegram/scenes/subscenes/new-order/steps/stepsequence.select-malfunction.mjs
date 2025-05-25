@@ -1,6 +1,6 @@
-import { ua } from "../../../../../translate.mjs";
-import { Markup } from "telegraf";
-import { malfunctionTypes } from "../../../../../translate.mjs";
+import { ua } from '../../../../../translate.mjs';
+import { Markup } from 'telegraf';
+import { malfunctionTypes } from '../../../../../translate.mjs';
 
 const malfunctionTypesKeyboard = (() => {
   const buttons = [

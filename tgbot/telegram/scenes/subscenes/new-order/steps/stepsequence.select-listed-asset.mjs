@@ -1,21 +1,21 @@
 import {
   chooseAssetTypes,
   specialMessages,
-} from "../../../../../translate.mjs";
-import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
-import { ua } from "../../../../../translate.mjs";
-import { generateUserAssetListKeyboard } from "../../../../telegram.utilities.mjs";
-import { getAsset } from "../../../../../remonline/remonline.utils.mjs";
+} from '../../../../../translate.mjs';
+import { stayInSpecialNewOrderSubscene } from '../../../../telegram.utilities.mjs';
+import { ua } from '../../../../../translate.mjs';
+import { generateUserAssetListKeyboard } from '../../../../telegram.utilities.mjs';
+import { getAsset } from '../../../../../remonline/remonline.utils.mjs';
 const stayInChooseListedAssetSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.listMyAssets,
 });
 
 const sendAssetKeyboard = async (ctx) => {
-  console.log("trying to send asset keyboard");
+  console.log('trying to send asset keyboard');
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode,
+    ctx.session.chosenAssetSelectingMode
   );
   if (navDecision) {
     return navDecision;
@@ -26,8 +26,8 @@ const sendAssetKeyboard = async (ctx) => {
   });
 
   ctx.reply(
-    code === 404 ? "Не знайдено ваших авто" : ua.createOrder.chooseAsset,
-    keyboard,
+    code === 404 ? 'Не знайдено ваших авто' : ua.createOrder.chooseAsset,
+    keyboard
   );
   return ctx.wizard.next();
 };
@@ -37,7 +37,7 @@ const getRemonlineAsset = async (ctx) => {
   }
   const navDecision = stayInChooseListedAssetSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode,
+    ctx.session.chosenAssetSelectingMode
   );
   if (navDecision) {
     return navDecision;

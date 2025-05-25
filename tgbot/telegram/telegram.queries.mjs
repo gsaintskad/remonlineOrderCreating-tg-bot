@@ -1,5 +1,5 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
 const db = await open({
   filename: process.env.DEV_DB,
@@ -9,7 +9,7 @@ const db = await open({
 export async function isUserSaved({ id }) {
   return await db.get(
     `SELECT telegram_id,remonline_id,first_name,branch_id,branch_public_name FROM telegram_users WHERE telegram_id = ? LIMIT 1`,
-    id,
+    id
   );
 }
 

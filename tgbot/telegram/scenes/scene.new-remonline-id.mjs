@@ -1,35 +1,35 @@
-import { Scenes, Markup } from "telegraf";
-import { ua } from "../../translate.mjs";
-import parsePhoneNumber from "libphonenumber-js";
-import * as EmailValidator from "email-validator";
+import { Scenes, Markup } from 'telegraf';
+import { ua } from '../../translate.mjs';
+import parsePhoneNumber from 'libphonenumber-js';
+import * as EmailValidator from 'email-validator';
 import {
   getClientsByPhone,
   createClient,
   editClient,
-} from "../../remonline/remonline.utils.mjs";
-import { saveRemonlineId, getBranchList } from "../telegram.queries.mjs";
-import { onStart, leaveSceneOnCommand } from "../middleware/start-handler.mjs";
+} from '../../remonline/remonline.utils.mjs';
+import { saveRemonlineId, getBranchList } from '../telegram.queries.mjs';
+import { onStart, leaveSceneOnCommand } from '../middleware/start-handler.mjs';
 
-import { listKeyboard } from "../middleware/keyboards.mjs";
+import { listKeyboard } from '../middleware/keyboards.mjs';
 
 const noEmailInlineBtm = (() => {
   return Markup.inlineKeyboard([
-    [Markup.button.callback("Не вказувати пошту", "without_mail")],
+    [Markup.button.callback('Не вказувати пошту', 'without_mail')],
   ]);
 })();
 
 const isDataCorrentBtm = (() => {
   return Markup.inlineKeyboard([
     [
-      Markup.button.callback("🟢 Так", "my_data_is_ok"),
-      Markup.button.callback("🔴 Ні", "i_put_wrong_data"),
+      Markup.button.callback('🟢 Так', 'my_data_is_ok'),
+      Markup.button.callback('🔴 Ні', 'i_put_wrong_data'),
     ],
   ]);
 })();
 
 const userInfoAppruvalText = (userData) => {
   const { number, fullName, email, branch_public_name } = userData;
-  let text = "";
+  let text = '';
   text += `👤 Ім\`я: ${fullName}`;
   text += `\n`;
   text += `☎️ Телефон: ${number}`;
@@ -58,7 +58,7 @@ export const createRemonlineId = new Scenes.WizardScene(
 
     ctx.reply(
       ua.createRemonlineId.askCity,
-      listKeyboard([...branchList, otherCity]),
+      listKeyboard([...branchList, otherCity])
     );
     return ctx.wizard.next();
   },
@@ -76,7 +76,7 @@ export const createRemonlineId = new Scenes.WizardScene(
     ctx.wizard.state.userData.branch_id = branch_id;
     ctx.wizard.state.userData.branch_public_name = public_name;
 
-    if (public_name == "Інше Місто") {
+    if (public_name == 'Інше Місто') {
       ctx.reply(ua.createRemonlineId.pickOwnCity, Markup.removeKeyboard());
       return ctx.wizard.next();
     }
@@ -109,7 +109,7 @@ export const createRemonlineId = new Scenes.WizardScene(
       return;
     }
 
-    const phoneNumber = parsePhoneNumber(ctx.message?.text, "UA");
+    const phoneNumber = parsePhoneNumber(ctx.message?.text, 'UA');
 
     if (phoneNumber.isValid() === false) {
       ctx.reply(ua.createRemonlineId.askCorrectPhone);
@@ -133,7 +133,7 @@ export const createRemonlineId = new Scenes.WizardScene(
       await ctx.reply(ua.createRemonlineId.areYouExistingClient);
       await ctx.reply(
         userInfoAppruvalText(ctx.wizard.state.userData),
-        isDataCorrentBtm,
+        isDataCorrentBtm
       );
       return ctx.wizard.selectStep(6);
     }
@@ -142,12 +142,12 @@ export const createRemonlineId = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async (ctx) => {
-    if (ctx.update?.callback_query?.data === "without_mail") {
+    if (ctx.update?.callback_query?.data === 'without_mail') {
       await ctx.answerCbQuery();
       await ctx.reply(ua.createRemonlineId.askToCheckContactInfo);
       await ctx.reply(
         userInfoAppruvalText(ctx.wizard.state.userData),
-        isDataCorrentBtm,
+        isDataCorrentBtm
       );
       return ctx.wizard.next();
     }
@@ -162,7 +162,7 @@ export const createRemonlineId = new Scenes.WizardScene(
     await ctx.reply(ua.createRemonlineId.askToCheckContactInfo);
     await ctx.reply(
       userInfoAppruvalText(ctx.wizard.state.userData),
-      isDataCorrentBtm,
+      isDataCorrentBtm
     );
     return ctx.wizard.next();
   },
@@ -172,7 +172,7 @@ export const createRemonlineId = new Scenes.WizardScene(
       return;
     }
 
-    if (data === "my_data_is_ok") {
+    if (data === 'my_data_is_ok') {
       const {
         email,
         fullName,
@@ -218,7 +218,7 @@ export const createRemonlineId = new Scenes.WizardScene(
       return onStart(ctx);
     }
 
-    if (data === "i_put_wrong_data") {
+    if (data === 'i_put_wrong_data') {
       await ctx.answerCbQuery();
       ctx.wizard.state.userData = {};
 
@@ -230,11 +230,11 @@ export const createRemonlineId = new Scenes.WizardScene(
 
       ctx.reply(
         ua.createRemonlineId.askCity,
-        listKeyboard([...branchList, otherCity]),
+        listKeyboard([...branchList, otherCity])
       );
       return ctx.wizard.selectStep(1);
     }
-  },
+  }
 );
 
-createRemonlineId.command("start", leaveSceneOnCommand);
+createRemonlineId.command('start', leaveSceneOnCommand);

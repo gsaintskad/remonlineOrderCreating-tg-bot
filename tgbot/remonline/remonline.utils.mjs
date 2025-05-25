@@ -1,13 +1,13 @@
-import fetch from "node-fetch";
-import { remonlineTokenReturn, remonlineTokenToEnv } from "./remonline.api.mjs";
-import { message } from "telegraf/filters";
+import fetch from 'node-fetch';
+import { remonlineTokenReturn, remonlineTokenToEnv } from './remonline.api.mjs';
+import { message } from 'telegraf/filters';
 
 async function getOrderLable(orderId) {
   console.log(
-    `await fetch(\`${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}\`);`,
+    `await fetch(\`${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}\`);`
   );
   const response = await fetch(
-    `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`,
+    `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}&ids[]=${orderId}`
   );
   const data = await response.json();
   // console.log("lable data resp:", data);
@@ -16,7 +16,7 @@ async function getOrderLable(orderId) {
     const { message } = data;
     const { validation } = message;
     console.error({
-      function: "getOrderLable",
+      function: 'getOrderLable',
       message,
       validation,
       status: response.status(),
@@ -54,7 +54,7 @@ export async function createOrder({
   //   "type": 1
   // },
   const custom_fields = {
-    f5294177: "test", // автопарк
+    f5294177: 'test', // автопарк
     f5294178: 5.0, // Пробег одонометр
     6728287: plateNumber, // номер авто
     6728288: branchPublicName, // название бранча(города)
@@ -72,8 +72,8 @@ export async function createOrder({
   };
   const url = `${process.env.REMONLINE_API}/order/?token=${process.env.REMONLINE_API_TOKEN}`;
   const options = {
-    method: "POST",
-    headers: { accept: "application/json", "content-type": "application/json" },
+    method: 'POST',
+    headers: { accept: 'application/json', 'content-type': 'application/json' },
     body: JSON.stringify(params),
   };
 
@@ -91,7 +91,7 @@ export async function createOrder({
       (response.status == 403 && code == 101) ||
       (response.status == 401 && code == 401)
     ) {
-      console.info({ function: "createOrder", message: "Get new Auth" });
+      console.info({ function: 'createOrder', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await createOrder({
         malfunction,
@@ -105,7 +105,7 @@ export async function createOrder({
     }
 
     console.error({
-      function: "createOrder",
+      function: 'createOrder',
       message,
       validation,
       status: response.status,
@@ -115,13 +115,13 @@ export async function createOrder({
 
   const { id } = data.data;
   const { idLabel } = await getOrderLable(id);
-  console.log("createOrder return:", id, idLabel);
+  console.log('createOrder return:', id, idLabel);
   return { id, idLabel };
 }
 
 export async function getClientsByPhone({ nationalNumber }) {
   const response = await fetch(
-    `${process.env.REMONLINE_API}/clients/?token=${process.env.REMONLINE_API_TOKEN}&phones[]=${nationalNumber}`,
+    `${process.env.REMONLINE_API}/clients/?token=${process.env.REMONLINE_API_TOKEN}&phones[]=${nationalNumber}`
   );
 
   const data = await response.json();
@@ -131,13 +131,13 @@ export async function getClientsByPhone({ nationalNumber }) {
     const { validation } = message;
 
     if ((response.status == 403 && code == 101) || response.status == 401) {
-      console.info({ function: "getClientsByPhone", message: "Get new Auth" });
+      console.info({ function: 'getClientsByPhone', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await getClientsByPhone({ nationalNumber });
     }
 
     console.error({
-      function: "createOrder",
+      function: 'createOrder',
       message,
       validation,
       status: response.status,
@@ -156,18 +156,18 @@ export async function createClient({
   telegramId,
   branchPublicName,
 }) {
-  const [first_name, last_name] = fullName.split(" ");
+  const [first_name, last_name] = fullName.split(' ');
 
   // Prepare request body correctly as a JSON object
   const requestBody = {
     token: process.env.REMONLINE_API_TOKEN,
     first_name,
-    last_name: last_name || "n0_2nd_Name",
+    last_name: last_name || 'n0_2nd_Name',
     phone: [number], // Phone must be an array
     custom_fields: {
       6729251: telegramId.toString(),
-      5370833: "Зовнішній клієнт",
-      f5370833: "Зовнішній клієнт",
+      5370833: 'Зовнішній клієнт',
+      f5370833: 'Зовнішній клієнт',
       6879276: branchPublicName,
     },
   };
@@ -179,8 +179,8 @@ export async function createClient({
   // console.log("Request Payload:", JSON.stringify(requestBody, null, 2)); // Debugging output
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" }, // Ensure JSON content type
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }, // Ensure JSON content type
     body: JSON.stringify(requestBody), // Send as JSON, NOT as x-www-form-urlencoded
   });
 
@@ -188,8 +188,8 @@ export async function createClient({
 
   if (!data.success) {
     console.error({
-      function: "createClient",
-      message: JSON.stringify(data.message) || "Unknown error",
+      function: 'createClient',
+      message: JSON.stringify(data.message) || 'Unknown error',
       validation: data.validation,
       status: response.status,
     });
@@ -209,9 +209,9 @@ export async function getOrders({ params }) {
 
   const url = `${process.env.REMONLINE_API}/orders${query_params}`;
   const options = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      accept: "application/json",
+      accept: 'application/json',
       authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
     },
   };
@@ -229,13 +229,13 @@ export async function getOrders({ params }) {
       (response.status == 403 && code == 101) ||
       (response.status == 401 && code == 401)
     ) {
-      console.info({ function: "getOrders", message: "Get new Auth" });
+      console.info({ function: 'getOrders', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await getOrders({ params });
     }
 
     console.error({
-      function: "getOrders",
+      function: 'getOrders',
       message,
       // validation,
       status: response.status,
@@ -246,18 +246,18 @@ export async function getOrders({ params }) {
 }
 export async function editClient({ id, branchPublicName }) {
   const params = new URLSearchParams();
-  params.append("token", process.env.REMONLINE_API_TOKEN);
-  params.append("id", id);
+  params.append('token', process.env.REMONLINE_API_TOKEN);
+  params.append('id', id);
   params.append(
-    "custom_fields",
+    'custom_fields',
     JSON.stringify({
       6879276: branchPublicName,
-    }),
+    })
   );
 
   const response = await fetch(`${process.env.REMONLINE_API}/clients/`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params,
   });
 
@@ -268,7 +268,7 @@ export async function editClient({ id, branchPublicName }) {
     const { validation } = message;
 
     if (response.status == 403 && code == 101) {
-      console.info({ function: "editClient", message: "Get new Auth" });
+      console.info({ function: 'editClient', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await editClient({
         id,
@@ -277,7 +277,7 @@ export async function editClient({ id, branchPublicName }) {
     }
 
     console.error({
-      function: "editClient",
+      function: 'editClient',
       message,
       validation,
       status: response.status,
@@ -290,14 +290,14 @@ export async function editClient({ id, branchPublicName }) {
   return { clientId };
 }
 
-if (process.env.REMONLINE_MODE == "dev") {
+if (process.env.REMONLINE_MODE == 'dev') {
   (async () => {
     await remonlineTokenToEnv();
     createOrder({
-      malfunction: "?",
+      malfunction: '?',
       scheduledFor: new Date().getTime(),
-      plateNumber: "??",
-      telegramId: "???",
+      plateNumber: '??',
+      telegramId: '???',
     });
     // getClientsByPhone({ nationalNumber: '0931630786' })
   })();
@@ -330,10 +330,10 @@ export async function createAsset({
   };
   const url = `${process.env.REMONLINE_API}/warehouse/assets`;
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      accept: "application/json",
-      "content-type": "application/json",
+      accept: 'application/json',
+      'content-type': 'application/json',
       authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
     },
 
@@ -352,13 +352,13 @@ export async function createAsset({
       (response.status == 403 && code == 101) ||
       (response.status == 401 && code == 401)
     ) {
-      console.info({ function: "createAsset", message: "Get new Auth" });
+      console.info({ function: 'createAsset', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await createAsset({ uid });
     }
 
     console.error({
-      function: "createAsset",
+      function: 'createAsset',
       message,
       validation,
       status: response.status,
@@ -384,9 +384,9 @@ export async function getAsset({ params }) {
 
   const url = `${process.env.REMONLINE_API}/warehouse/assets${query_params}`;
   const options = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      accept: "application/json",
+      accept: 'application/json',
       authorization: `Bearer ${process.env.REMONLINE_API_TOKEN}`,
     },
   };
@@ -404,13 +404,13 @@ export async function getAsset({ params }) {
       (response.status == 403 && code == 101) ||
       (response.status == 401 && code == 401)
     ) {
-      console.info({ function: "getAsset", message: "Get new Auth" });
+      console.info({ function: 'getAsset', message: 'Get new Auth' });
       await remonlineTokenToEnv(true);
       return await getAsset({ params });
     }
 
     console.error({
-      function: "getAsset",
+      function: 'getAsset',
       message,
       validation,
       status: response.status,

@@ -1,17 +1,17 @@
-import { Markup } from "telegraf";
-import { chooseAssetTypes } from "../../../../../translate.mjs";
-import { stayInSpecialNewOrderSubscene } from "../../../../telegram.utilities.mjs";
-import { ua } from "../../../../../translate.mjs";
-import { isDataCorrentBtm } from "../../../../middleware/keyboards.mjs";
-import { createAsset } from "../../../../../remonline/remonline.utils.mjs";
-import { saveNewAsset } from "../../../../telegram.queries.mjs";
+import { Markup } from 'telegraf';
+import { chooseAssetTypes } from '../../../../../translate.mjs';
+import { stayInSpecialNewOrderSubscene } from '../../../../telegram.utilities.mjs';
+import { ua } from '../../../../../translate.mjs';
+import { isDataCorrentBtm } from '../../../../middleware/keyboards.mjs';
+import { createAsset } from '../../../../../remonline/remonline.utils.mjs';
+import { saveNewAsset } from '../../../../telegram.queries.mjs';
 
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.registerNewAsset,
 });
 const getLicensePlate = async (ctx) => {
-  console.log("trying to create new asset");
+  console.log('trying to create new asset');
   // const navDecision = stayInNewAssetRegitraionSubscene(
   //   ctx,
   //   ctx.session.chosenAssetSelectingMode
@@ -26,7 +26,7 @@ const getLicensePlate = async (ctx) => {
 const verifyNumber = async (ctx) => {
   const navDecision = stayInNewAssetRegitraionSubscene(
     ctx,
-    ctx.session.chosenAssetSelectingMode,
+    ctx.session.chosenAssetSelectingMode
   );
   if (navDecision) {
     return navDecision;
@@ -125,8 +125,8 @@ const verificationSummary = async (ctx) => {
     return;
   }
   const { data } = ctx.update.callback_query;
-  if (data === "wrong_order" || data !== "order_is_ok") {
-    await ctx.answerCbQuery("Помилкa. Повторіть спробу");
+  if (data === 'wrong_order' || data !== 'order_is_ok') {
+    await ctx.answerCbQuery('Помилкa. Повторіть спробу');
     await ctx.reply(ua.createOrder.tryAgainToCompletApointment);
     return ctx.scene.enter(process.env.NEW_ASSET_SCENE);
   }
@@ -160,7 +160,7 @@ const verificationSummary = async (ctx) => {
   await saveNewAsset({ asset_id, client_id, asset_uid: uid });
   delete ctx.session.contactData.newAssetDto;
   ctx.session.contactData.chosenAsset = chosenAsset;
-  ctx.reply("leaving scene...");
+  ctx.reply('leaving scene...');
   return ctx.scene.enter(process.env.SELECT_MALFUNCTION_SCENE);
 };
 export const registerNewAssetStepSequence = [

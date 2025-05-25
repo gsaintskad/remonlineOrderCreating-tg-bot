@@ -1,23 +1,23 @@
-import { Markup } from "telegraf";
+import { Markup } from 'telegraf';
 
-import { createOrder } from "../../../../../remonline/remonline.utils.mjs";
+import { createOrder } from '../../../../../remonline/remonline.utils.mjs';
 import {
   saveOrder,
   getBranchManager,
-} from "../../../../../remonline/remonline.queries.mjs";
-import { mainKeyboard } from "../../../../middleware/keyboards.mjs";
-import { isDataCorrentBtm } from "../../../../middleware/keyboards.mjs";
-import { ua } from "../../../../../translate.mjs";
+} from '../../../../../remonline/remonline.queries.mjs';
+import { mainKeyboard } from '../../../../middleware/keyboards.mjs';
+import { isDataCorrentBtm } from '../../../../middleware/keyboards.mjs';
+import { ua } from '../../../../../translate.mjs';
 
 const summarize = async (ctx) => {
   ctx.session.contactData.apointmenDate = new Date();
   ctx.session.contactData.apointmenDateString = new Date()
     .toISOString()
-    .split("T")[0];
+    .split('T')[0];
 
   await ctx.reply(ua.createOrder.askToVefirApointment);
 
-  let text = "";
+  let text = '';
   text += `🚙 Авто: ${ctx.session.contactData.chosenAsset.uid}`;
   text += `\n`;
   text += `🗓 Причина: ${ctx.session.contactData.malfunctionType}`;
@@ -37,13 +37,13 @@ const check = async (ctx) => {
     return;
   }
   const { data } = ctx.update.callback_query;
-  if (data == "wrong_order") {
+  if (data == 'wrong_order') {
     await ctx.answerCbQuery();
     await ctx.reply(ua.createOrder.tryAgainToCompletApointment);
     return ctx.scene.enter(process.env.CREATE_ORDER_SCENE);
   }
 
-  if (data == "order_is_ok") {
+  if (data == 'order_is_ok') {
     const {
       malfunctionDescription,
       malfunctionType,
@@ -73,7 +73,7 @@ const check = async (ctx) => {
         manager_id,
         asset_id,
       });
-      console.log({ idLabel, orderId }, "order successfully created");
+      console.log({ idLabel, orderId }, 'order successfully created');
 
       await saveOrder({
         orderId,
@@ -83,7 +83,7 @@ const check = async (ctx) => {
         malfunction,
       });
 
-      console.log({ idLabel, orderId }, "order successfully saved");
+      console.log({ idLabel, orderId }, 'order successfully saved');
       let text = ua.createOrder.apointmentDone;
       text += `\n`;
       text += `\n`;
@@ -101,13 +101,13 @@ const check = async (ctx) => {
       text += `⏰ Дата: ${apointmenDateString}`;
       text += `\n`;
       text += ua.createOrder.apointmentWaitingApproval;
-      await ctx.answerCbQuery("👌");
+      await ctx.answerCbQuery('👌');
       await ctx.reply(text, mainKeyboard);
       await ctx.scene.leave();
       return;
     } catch (e) {
       console.error({
-        message: "error while createOrder in new order scene",
+        message: 'error while createOrder in new order scene',
         e,
       });
       await ctx.answerCbQuery(ua.errorWhileCreateOrder, { show_alert: true });

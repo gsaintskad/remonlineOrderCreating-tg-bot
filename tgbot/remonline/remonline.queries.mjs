@@ -1,5 +1,5 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 
 const db = await open({
   filename: process.env.DEV_DB,
@@ -31,6 +31,6 @@ export async function saveOrder({
 export async function getBranchManager(branch_id) {
   return await db.get(
     `SELECT manager_id FROM branches where id = ?`,
-    branch_id,
+    branch_id
   );
 }
