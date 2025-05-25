@@ -58,6 +58,7 @@ export const ua = {
     sharePhoneNumberButtonText: '☎️ Вказати номер телефону',
     askCorrectContact: '⚠️ Вкажіть вірний контакт',
     thankYouForSharingPhone: 'Дякуємо за надання вашого контакту ☺️!',
+
   },
 };
 

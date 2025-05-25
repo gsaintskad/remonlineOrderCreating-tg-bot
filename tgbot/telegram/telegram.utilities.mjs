@@ -3,8 +3,10 @@ import { URLSearchParams } from 'url';
 import { Markup } from 'telegraf';
 import { getAsset } from '../remonline/remonline.utils.mjs';
 import { turnBackKeyboard } from './middleware/keyboards.mjs';
+
 import { getAssetDataByClientId } from './telegram.queries.mjs';
 import { getUnpackedSettings } from 'http2';
+
 
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);

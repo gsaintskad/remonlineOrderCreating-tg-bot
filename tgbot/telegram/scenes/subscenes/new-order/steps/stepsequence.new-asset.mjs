@@ -3,13 +3,14 @@ import { chooseAssetTypes } from '../../../../../translate.mjs';
 import { stayInSpecialNewOrderSubscene } from '../../../../telegram.utilities.mjs';
 import { ua } from '../../../../../translate.mjs';
 import { isDataCorrentBtm } from '../../../../middleware/keyboards.mjs';
+
 import {
   createAsset,
   getAsset,
 } from '../../../../../remonline/remonline.utils.mjs';
 import { saveNewAsset } from '../../../../telegram.queries.mjs';
 import { transliterateCyrillicToLatinString } from '../../../../../utils/utils.mjs';
-
+-
 const stayInNewAssetRegitraionSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
   targetSubscene: chooseAssetTypes.registerNewAsset,
