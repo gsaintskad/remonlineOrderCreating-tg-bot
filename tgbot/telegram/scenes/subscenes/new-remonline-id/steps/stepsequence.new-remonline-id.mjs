@@ -139,8 +139,10 @@ const handleContact = async (ctx) => {
     );
     return;
   }
-  const isUkrainianNumber = phoneNumberString.startsWith('380');
-  const isPolishNumber = phoneNumberString.startsWith('48');
+  const isUkrainianNumber =
+    phoneNumberString.startsWith('380') || phoneNumberString.startsWith('+380');
+  const isPolishNumber =
+    phoneNumberString.startsWith('48') || phoneNumberString.startsWith('+48');
   if (!isUkrainianNumber && !isPolishNumber) {
     ctx.reply(ua.createRemonlineId.askCorrectPhone);
     return;
