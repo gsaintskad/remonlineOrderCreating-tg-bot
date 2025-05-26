@@ -6,6 +6,7 @@ import {
   onEdit,
   onGetOrders,
   onNewClient,
+  onReset,
 } from './middleware/start-handler.mjs';
 import { keyboardText } from '../translate.mjs';
 
@@ -17,8 +18,12 @@ const initBot = async () => {
   bot.use(dbLogger);
   bot.start(onStart);
   bot.command('edit', onEdit);
-  bot.command('newClient', onNewClient);
   bot.command('getOrders', onGetOrders);
+
+  if (process.env.ENV === 'dev') {
+    bot.command('newClient', onNewClient);
+    bot.command('reset', onReset);
+  }
 
   bot.hears(keyboardText.newAppointment, (ctx) => {
     if (!ctx.session.remonline_id) {
