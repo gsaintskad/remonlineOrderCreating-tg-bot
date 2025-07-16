@@ -5,29 +5,19 @@ networks:
     driver: bridge
 
 services:
-  nginx:
-    image: nginx:latest
-    ports:
-      - "7003:80"
- 
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - /etc/letsencrypt:/etc/letsencrypt 
-    networks:
-      - m_net
-    depends_on:
-      - webapp
-      - tgbot
   webapp:
     build:
       context: ./webapp 
-
+    ports:
+      - "7003:8080"
     networks:
       - m_net
   
   tgbot:
     build:
       context: ./tgbot
+    ports:
+      - "7004:3000"
     container_name: tgbot-container
     restart: unless-stopped
     env_file:
@@ -35,7 +25,7 @@ services:
     volumes:
       - ./tgbot/data:/usr/src/app/data 
     networks:
-      - m_net
+      - m_net 
 
 volumes:
-  tgbot_db_data: 
+  tgbot_db_data: # Defines the named volume for data persistence
