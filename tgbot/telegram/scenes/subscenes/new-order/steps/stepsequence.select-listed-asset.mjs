@@ -4,7 +4,7 @@ import {
 } from '../../../../../translate.mjs';
 import { stayInSpecialNewOrderSubscene } from '../../../../telegram.utilities.mjs';
 import { ua } from '../../../../../translate.mjs';
-import { generateUserAssetListKeyboard } from '../../../../telegram.utilities.mjs';
+import { generateUserAssetList } from '../../../../telegram.utilities.mjs';
 import { getAsset } from '../../../../../remonline/remonline.utils.mjs';
 const stayInChooseListedAssetSubscene = stayInSpecialNewOrderSubscene({
   subSceneSet: chooseAssetTypes,
@@ -21,7 +21,7 @@ const sendAssetKeyboard = async (ctx) => {
     return navDecision;
   }
   const { remonline_id } = ctx.session;
-  const { code, keyboard } = await generateUserAssetListKeyboard({
+  const { code, keyboard } = await generateUserAssetList({
     remonline_id,
   });
 

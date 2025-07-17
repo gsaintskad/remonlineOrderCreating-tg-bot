@@ -68,7 +68,7 @@ export function verifyTelegramWebAppData(initDataString, botToken) {
   }
 }
 
-export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
+export const generateUserAssetList = async ({ remonline_id }) => {
   const params = {
     remonline_id,
   };
@@ -90,15 +90,8 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
     });
   });
   console.log({ uids });
-  const chooseAssetKeyboard = (() => {
-    const buttons = uids.map((uid) => [uid]);
-    console.log({ buttons });
-    return {
-      code: 200,
-      keyboard: Markup.keyboard(buttons).oneTime(true).resize(true),
-    };
-  })();
-  return chooseAssetKeyboard;
+
+  return { foundAssetButtons: uids.map((uid) => [uid]) };
 };
 export const stayInSpecialNewOrderSubscene = ({
   subSceneSet,
