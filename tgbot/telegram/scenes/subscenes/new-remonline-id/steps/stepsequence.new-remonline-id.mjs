@@ -145,10 +145,8 @@ const handleContact = async (ctx) => {
     ctx.reply(ua.createRemonlineId.askCorrectPhone);
     return;
   }
-  let phoneNumber;
-  if (isUkrainianNumber)
-    phoneNumber = parsePhoneNumber(phoneNumberString, 'UA');
-  if (isPolishNumber) phoneNumber = parsePhoneNumber(phoneNumberString, 'PL');
+  const phoneNumber = parsePhoneNumber(phoneNumberString);
+
   if (!phoneNumber || !phoneNumber.isValid()) {
     // Added !phoneNumber for safety
     ctx.reply(
