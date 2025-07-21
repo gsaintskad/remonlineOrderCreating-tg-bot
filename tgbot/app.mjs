@@ -4,7 +4,6 @@ import { remonlineTokenToEnv } from './remonline/remonline.api.mjs';
 import initAPI from './api/initAPI.mjs';
 import initBot from './telegram/initBot.mjs';
 
-
 const startApp = async () => {
   dotenv.config();
 
