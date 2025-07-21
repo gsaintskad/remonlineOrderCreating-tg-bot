@@ -29,13 +29,6 @@ const getLicensePlate = async (ctx) => {
   return ctx.wizard.next();
 };
 const verifyNumber = async (ctx) => {
-  const navDecision = stayInNewAssetRegitraionSubscene(
-    ctx,
-    ctx.session.chosenAssetSelectingMode
-  );
-  if (navDecision) {
-    return navDecision;
-  }
   if (ctx.message?.text?.length != 8) {
     ctx.reply(ua.createAsset.wrongPlateNumber);
     return;
