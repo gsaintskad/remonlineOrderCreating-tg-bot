@@ -314,6 +314,21 @@ export async function createAsset({
   myTaxiCrmId,
   client_id,
 }) {
+  if (!carGroup) {
+    carGroup = 'невідомо';
+  }
+  if (!color) {
+    color = 'невідомо';
+  }
+  if (!mileage) {
+    mileage = 0;
+  }
+  if (!engineVolume) {
+    engineVolume = 0;
+  }
+  if (!myTaxiCrmId) {
+    myTaxiCrmId = 'невідомо';
+  }
   const params = {
     uid,
     group: carGroup,
