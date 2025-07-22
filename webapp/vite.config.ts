@@ -8,7 +8,7 @@ export default defineConfig({
   // Set the base public path for your application.
   // This should match the subpath where your application is deployed on your server (e.g., Nginx).
   // In your case, it's '/webapp/'.
-  base: '/webapp/', // Make sure to include the trailing slash!
+  base: '/remonline_creator_web_app/', // Make sure to include the trailing slash!
 
   plugins: [react(), tailwindcss()],
   resolve: {
