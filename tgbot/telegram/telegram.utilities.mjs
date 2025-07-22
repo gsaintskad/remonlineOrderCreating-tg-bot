@@ -6,6 +6,7 @@ import { turnBackKeyboard } from './middleware/keyboards.mjs';
 
 import { getAssetDataByClientId } from './telegram.queries.mjs';
 import { getUnpackedSettings } from 'http2';
+import { chooseAssetTypes } from '../translate.mjs';
 
 export function verifyTelegramWebAppData(initDataString, botToken) {
   const params = new URLSearchParams(initDataString);
@@ -68,7 +69,7 @@ export function verifyTelegramWebAppData(initDataString, botToken) {
   }
 }
 
-export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
+export const generateUserAssetListKeyboard = async ({ remonline_id, ctx }) => {
   const params = {
     remonline_id,
   };
@@ -90,8 +91,10 @@ export const generateUserAssetListKeyboard = async ({ remonline_id }) => {
     });
   });
   console.log({ uids });
+  ctx.session.contactData.availableAssets = structuredClone(uids);
   const chooseAssetKeyboard = (() => {
     const buttons = uids.map((uid) => [uid]);
+    buttons.push([chooseAssetTypes.registerNewAsset]);
     console.log({ buttons });
     return {
       code: 200,
